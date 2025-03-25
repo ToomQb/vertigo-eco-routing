@@ -46,6 +46,13 @@
 
 :root {
   --radius: 0.625rem;
+  --green: #6a994e;
+  --dark-green: #3b6b37;
+  --light: #fffff3;
+  --beige: #f2e8cf;
+  --red: #CE3B3E;
+  --dark: #0A0908;
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -78,6 +85,24 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
+  
+.bg-green { background-color: var(--green); }
+.text-green { color: var(--green); }
+
+.bg-dark-green { background-color: var(--dark-green); }
+.text-dark-green { color: var(--dark-green); }
+
+.bg-light { background-color: var(--light); }
+.text-light { color: var(--light); }
+
+.bg-beige { background-color: var(--beige); }
+.text-beige { color: var(--beige); }
+  
+.bg-red { background-color: var(--red); }
+.text-red { color: var(--red); }
+
+.bg-dark { background-color: var(--dark); }
+.text-dark { color: var(--dark); }
 
 .dark {
   --background: oklch(0.145 0 0);
