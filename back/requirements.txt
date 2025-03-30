@@ -4,3 +4,4 @@ uvicorn
 alembic
 sqlalchemy
 psycopg2-binary
+pyright

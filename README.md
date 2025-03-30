@@ -89,6 +89,12 @@ uvicorn main:app --host 0.0.0.0 --port 3002
 python3 main.py
 ```
 
+### Test types
+
+```bash
+pyright
+```
+
 ### Setup environment Variables
 
 Create a `.env` file (back/.env) and add the following environment variables:
