@@ -1,7 +1,9 @@
-fastapi
+fastapi[standard]
 pydantic
 uvicorn
 alembic
 sqlalchemy
 psycopg2-binary
+pyjwt
+passlib[bcrypt]
 pyright

@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 
+from routes import auth_routes, user_routes
+
 app = FastAPI()
 
-@app.get("/hello_world")
-def read_root():
-    return {"Hello": "World"}
+app.include_router(auth_routes.router, prefix="/auth", tags=["Authentication"])
+app.include_router(user_routes.router, prefix="/users", tags=["Users"])
 
 
 if __name__ == "__main__":
