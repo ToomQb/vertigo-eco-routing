@@ -1,0 +1,8 @@
+{
+    "include": ["app"],
+    "exclude": ["tests", "app/alembic"],
+    "reportMissingImports": true,
+    "reportUnusedImport": true,
+    "typeCheckingMode": "standard",
+    "pythonVersion": "3.12"
+}
