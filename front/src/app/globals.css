@@ -91,6 +91,9 @@
 
 .bg-dark-green { background-color: var(--dark-green); }
 .text-dark-green { color: var(--dark-green); }
+.border-dark-green {
+  border-color: var(--dark-green);
+}
 
 .bg-light { background-color: var(--light); }
 .text-light { color: var(--light); }
@@ -147,10 +150,9 @@
   }
 }
 
-html, body {
+html, body, #__next {
   height: 100%;
   margin: 0;
   padding: 0;
   overflow: hidden;
 }
-

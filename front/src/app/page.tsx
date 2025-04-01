@@ -1,9 +1,10 @@
 import Map from "@/components/layout/map";
-import { Button } from "@components/ui/button";
+import RouteSearch from "@/components/global/route-search";
 
 export default function Home() {
   return (
-    <main className="w-full h-[calc(100vh-64px)] overflow-hidden">
+    <main className="flex-1">
+      <RouteSearch />
       <Map />
     </main>
   );
