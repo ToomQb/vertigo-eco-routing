@@ -13,7 +13,7 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ajoutez ici la logique d'inscription (ex: appel API)
+    // logique d'inscription
   };
 
   return (
@@ -68,7 +68,7 @@ const SignUpPage = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2">
+          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2 cursor-pointer">
             <FaUserPlus />
             Sign Up
           </Button>

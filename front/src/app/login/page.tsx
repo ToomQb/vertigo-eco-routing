@@ -12,7 +12,7 @@ const SignInPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Ajoutez ici la logique de connexion (ex: appel API)
+    // logique de connexion
   };
 
   return (
@@ -54,7 +54,7 @@ const SignInPage = () => {
 
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <input type="checkbox" id="remember" className="h-4 w-4 text-dark-green dark:text-white" />
+              <input type="checkbox" id="remember" className="h-4 w-4 text-dark-green dark:text-white cursor-pointer" />
               <label htmlFor="remember" className="text-sm text-gray-600 dark:text-white">Remember me</label>
             </div>
             <Link href="/forgot-password" className="text-sm text-dark-green dark:text-white hover:underline">
@@ -62,7 +62,7 @@ const SignInPage = () => {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2">
+          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2 cursor-pointer">
             <FaSignInAlt />
             Sign In
           </Button>

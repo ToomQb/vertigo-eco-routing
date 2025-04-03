@@ -89,19 +89,19 @@ const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <Link href="/login">
-              <DropdownMenuItem>
+            <Link href="/login" >
+              <DropdownMenuItem className="cursor-pointer">
                 <FaSignInAlt className="mr-2" size={18} /> Login
               </DropdownMenuItem>
             </Link>
             <Link href="/signup">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaUserPlus className="mr-2" size={18} /> Sign Up
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
             <Link href="/support">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaQuestionCircle className="mr-2" size={18} /> Support
               </DropdownMenuItem>
             </Link>
@@ -121,30 +121,30 @@ const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
 
             <DropdownMenuSeparator />
             <Link href="/saved-trips">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaHeart className="mr-2" size={18} /> Saved Trips
               </DropdownMenuItem>
             </Link>
             <Link href="/vehicles">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaCar className="mr-2" size={18} /> Vehicles
               </DropdownMenuItem>
             </Link>
 
             <DropdownMenuSeparator />
             <Link href="/settings">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaCog className="mr-2" size={18} /> Settings
               </DropdownMenuItem>
             </Link>
             <Link href="/support">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaQuestionCircle className="mr-2" size={18} /> Support
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
             <Link href="/logout">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">
                 <FaSignOutAlt className="mr-2" size={18} /> Logout
               </DropdownMenuItem>
             </Link>
