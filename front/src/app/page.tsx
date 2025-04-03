@@ -1,4 +1,4 @@
-import Map from "@/components/layout/map";
+import Map from "@/components/global/map";
 import RouteSearch from "@/components/global/route-search";
 
 export default function Home() {
