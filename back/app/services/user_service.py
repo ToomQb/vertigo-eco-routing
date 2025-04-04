@@ -39,7 +39,7 @@ class UserService:
     
     @staticmethod
     def create_user(user: UserRegister) -> UserInDB:
-        if UserService.get_user(user.username):
+        if UserCRUD().get_user(user.username):
             raise HTTPException(
                 status_code=409,
                 detail="User already exists"
