@@ -29,6 +29,6 @@ class RouteRequest(BaseModel):
     end: tuple[float, float]    # (longitude, latitude)
     transport_mode: Literal[
         "driving-car", "driving-hgv", "cycling-regular", 
-        "cycling-electric", "foot-walking", "foot-hiking", 
-        "public-transport"
+        "cycling-road", "cycling-mountain", "cycling-electric", 
+        "foot-walking", "foot-hiking", "wheelchair"
     ]

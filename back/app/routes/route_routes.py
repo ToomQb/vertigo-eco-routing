@@ -21,10 +21,12 @@ def calculate_route(request: RouteRequest):
     - 🚗 `driving-car` : Standard car routing  
     - 🚛 `driving-hgv` : Heavy goods vehicle routing  
     - 🚴 `cycling-regular` : Regular bicycle routing  
+    - 🛣️ `cycling-road` : Road bicycle routing  
+    - 🏔️ `cycling-mountain` : Mountain bicycle routing  
     - ⚡ `cycling-electric` : Electric bicycle routing  
     - 🚶 `foot-walking` : Pedestrian walking route  
     - 🥾 `foot-hiking` : Hiking route  
-    - 🚌 `public-transport` : Public transport routing  
+    - 🦽 `wheelchair` : Wheelchair route
 
     ### Returns
     - A GeoJSON object representing the calculated route.
