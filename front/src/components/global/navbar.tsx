@@ -60,7 +60,7 @@ const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size="icon" className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-dark-green">
+        <Button variant="secondary" size="icon" className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-dark-green cursor-pointer">
           <Avatar>
             <AvatarFallback>
               <FaUser size={24} />

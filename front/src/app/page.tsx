@@ -1,5 +1,5 @@
 import Map from "@/components/global/map";
-import RouteSearch from "@/components/global/route-search";
+import RouteSearch from "@/components/global/input-field";
 
 export default function Home() {
   return (
