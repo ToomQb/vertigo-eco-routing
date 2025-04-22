@@ -88,7 +88,7 @@ const MapComponent = () => {
         />
           <button
             onClick={swapAddresses}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 my-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 my-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer"
           >
             <FaExchangeAlt className="text-gray-600 dark:text-gray-300" size={18} />
           </button>
@@ -101,7 +101,7 @@ const MapComponent = () => {
         </div>
         <button
           onClick={findRoute}
-          className="w-full mt-3 bg-dark-green text-white py-2 rounded-lg hover:bg-green-700 transition"
+          className="w-full mt-3 bg-dark-green text-white py-2 rounded-lg hover:bg-green-700 transition cursor-pointer"
         >
           Find route
         </button>
