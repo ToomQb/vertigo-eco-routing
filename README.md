@@ -87,9 +87,7 @@ pip install -r requirements.txt
 ### Run the application
 
 ```bash
-uvicorn main:app --host 0.0.0.0 --port 3002
-# or
-python3 main.py
+uvicorn app.main:app --host 0.0.0.0 --port 3002 #from back/
 ```
 
 ### Test types

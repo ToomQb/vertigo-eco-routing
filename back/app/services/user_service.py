@@ -1,12 +1,11 @@
+from fastapi import Depends, HTTPException, status 
 import jwt
 from jwt.exceptions import InvalidTokenError
-from config.security import oauth2_scheme, ALGORITHM, SECRET_KEY
-from crud.user import UserCRUD
-from schemas.types import TokenData
-from fastapi import Depends, HTTPException, status 
 from typing import Annotated
-from schemas.types import UserInDB, UserRegister
-from services.security_service import SecurityService
+from app.config.security import oauth2_scheme, ALGORITHM, SECRET_KEY
+from app.crud.user import UserCRUD
+from app.schemas.types import UserInDB, UserRegister
+from app.services.security_service import SecurityService
 
 class UserService:
     @staticmethod
@@ -29,7 +28,6 @@ class UserService:
             username = payload.get("sub")
             if username is None:
                 raise credentials_exception
-            token_data = TokenData(username=username)
         except InvalidTokenError:
             raise credentials_exception
         user = UserService.get_user(username)

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
-from services.auth_service import AuthService
-from schemas.types import Token
+from app.services.auth_service import AuthService
+from app.schemas.types import Token
 
 router = APIRouter()
 

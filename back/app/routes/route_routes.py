@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from config.security import ORS_API_KEY
-from schemas.types import RouteRequest
+from app.config.security import ORS_API_KEY
+from app.schemas.types import RouteRequest
 import openrouteservice # sous licence Apache 2.0
 
 router = APIRouter()

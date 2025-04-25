@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
-from services.user_service import UserService
-from schemas.types import UserRegister, UserInDB
-from schemas.types import User
+from app.services.user_service import UserService
+from app.schemas.types import UserRegister, UserInDB, User
 from typing import Annotated
 
 router = APIRouter()

@@ -1,6 +1,6 @@
-from schemas.types import UserInDB
-from models.user import User as UserTable
-from config.database import get_db
+from app.schemas.types import UserInDB
+from app.models.user import User as UserTable
+from app.config.database import get_db
 from sqlalchemy.orm import Session
 
 class UserCRUD:

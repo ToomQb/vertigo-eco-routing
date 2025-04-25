@@ -1,10 +1,9 @@
 from fastapi import HTTPException, status
 from datetime import timedelta
-from services.security_service import SecurityService
-from schemas.types import Token, UserInDB
-from services.user_service import UserService
-from config.security import ACCESS_TOKEN_EXPIRE_MINUTES
-from schemas.types import UserInDB
+from app.services.security_service import SecurityService
+from app.services.user_service import UserService
+from app.schemas.types import Token, UserInDB, UserInDB
+from app.config.security import ACCESS_TOKEN_EXPIRE_MINUTES
 
 class AuthService:
     @staticmethod
