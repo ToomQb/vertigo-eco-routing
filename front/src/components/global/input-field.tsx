@@ -1,26 +1,82 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { searchAddress, AddressResult } from "./utils";
 
-const InputField = ({
-  label,
-  placeholder,
-  value,
-  setValue,
-}: {
+interface Props {
   label: string;
-  placeholder: string;
+  placeholder?: string;
   value: string;
   setValue: (val: string) => void;
-}) => {
+  onSelectSuggestion?: (label: string) => void;
+}
+
+const InputField: React.FC<Props> = ({ label, placeholder, value, setValue, onSelectSuggestion }) => {
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    if (!isTyping) return;
+
+    const timer = setTimeout(async () => {
+      if (value.length > 3) {
+        const results: AddressResult[] = await searchAddress(value);
+        setSuggestions(results.map((r) => r.label));
+        setShowSuggestions(true);
+      } else {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [value, isTyping]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsTyping(true);
+    setValue(e.target.value);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      if (!inputRef.current?.contains(document.activeElement)) {
+        setShowSuggestions(false);
+      }
+    }, 100);
+  };
+
+  const handleSelect = (label: string) => {
+    setIsTyping(false);
+    setValue(label);
+    setShowSuggestions(false);
+    onSelectSuggestion?.(label);
+  };
+
   return (
-    <div className="w-full">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{label}</label>
+    <div className="relative">
+      <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
       <input
-        type="text"
-        className="w-full px-3 py-2 border rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-white focus:outline-none focus:ring-2"
+        ref={inputRef}
+        className="w-full border px-3 py-2 rounded focus:outline-none mt-1"
         placeholder={placeholder}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
+        onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
+        onBlur={handleBlur}
       />
+      {showSuggestions && (
+        <ul className="absolute z-50 bg-white dark:bg-gray-700 shadow-md w-full mt-1 rounded max-h-40 overflow-auto">
+          {suggestions.map((s, idx) => (
+            <li
+              key={idx}
+              onClick={() => handleSelect(s)}
+              className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer text-sm"
+            >
+              {s}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
