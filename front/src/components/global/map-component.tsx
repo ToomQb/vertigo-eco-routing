@@ -7,11 +7,12 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import { FaExchangeAlt } from "react-icons/fa";
+import { FaExchangeAlt, FaWalking, FaCar, FaBicycle, FaWheelchair } from "react-icons/fa";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Loader2 } from "lucide-react";
+import * as RadioGroup from "@radix-ui/react-radio-group";
 
 // Components
 import InputField from "./input-field";
@@ -49,6 +50,26 @@ const MapComponent: React.FC = () => {
   const [totalDistance, setTotalDistance] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedMode, setSelectedMode] = useState<string>("foot-walking");
+
+  const options = [
+    {
+      value: "driving-car",
+      icon: <FaCar className="h-6 w-6 text-dark-green" />,
+    },
+    {
+      value: "cycling-regular",
+      icon: <FaBicycle className="h-6 w-6 text-dark-green" />,
+    },
+    {
+      value: "foot-walking",
+      icon: <FaWalking className="h-6 w-6 text-dark-green" />,
+    },
+    {
+      value: "wheelchair",
+      icon: <FaWheelchair className="h-6 w-6 text-dark-green" />,
+    },
+  ];
 
   // Map reference
   const mapRef = useRef<L.Map | null>(null);
@@ -91,7 +112,7 @@ const MapComponent: React.FC = () => {
     
     mapRef.current.fitBounds(
       [startCoords as LatLngTuple, endCoords as LatLngTuple], 
-      { padding: [50, 50] }
+      { padding: [150, 150] }
     );
   }, [startCoords, endCoords]);
 
@@ -181,7 +202,7 @@ const MapComponent: React.FC = () => {
         body: JSON.stringify({
           start: [startLatLng[1], startLatLng[0]],  // [lng, lat] (reversed order)
           end: [endLatLng[1], endLatLng[0]],        // [lng, lat] (reversed order)
-          transport_mode: "driving-car"
+          transport_mode: selectedMode // Pass selected modes
         }),
       });
   
@@ -306,6 +327,25 @@ const MapComponent: React.FC = () => {
             setValue={setEnd}
             onSelectSuggestion={(label) => handleAddressSelection(label, false)}
           />
+        </div>
+
+        {/* Transport options */}
+        <div id="transport-options" className="flex mt-4 mb-2">
+          <RadioGroup.Root
+            value={selectedMode}
+            onValueChange={setSelectedMode}
+            className="max-w-sm w-full grid grid-cols-4 gap-3"
+          >
+            {options.map((option) => (
+              <RadioGroup.Item
+                key={option.value}
+                value={option.value}
+                className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)]"
+              >
+                <span className="tracking-tight">{option.icon}</span>
+              </RadioGroup.Item>
+            ))}
+          </RadioGroup.Root>
         </div>
         
         {/* Find route button */}
