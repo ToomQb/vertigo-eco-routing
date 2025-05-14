@@ -11,6 +11,7 @@ import { FaExchangeAlt } from "react-icons/fa";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { Loader2 } from "lucide-react";
 
 // Components
 import InputField from "./input-field";
@@ -19,8 +20,8 @@ import InputField from "./input-field";
 import { geocodeAddress, parseCoords, reverseGeocode } from "./utils";
 
 // Constants
-const INITIAL_START: LatLngTuple = [45.7498895120524, 4.826977382148856];
-const INITIAL_END: LatLngTuple = [45.7816645, 4.8681545];
+const INITIAL_START : LatLngTuple = [45.7498895120524, 4.826977382148856];
+const INITIAL_END : LatLngTuple = [45.7816645, 4.8681545];
 
 // Default Leaflet icon setup
 const DefaultIcon = L.icon({
@@ -39,29 +40,28 @@ interface ContextMenuState {
 }
 
 const MapComponent: React.FC = () => {
-  // State for addresses
+  // State for addresses and coordinates
   const [start, setStart] = useState<string>("");
   const [end, setEnd] = useState<string>("");
-  
-  // State for coordinates
   const [startCoords, setStartCoords] = useState<LatLngExpression>(INITIAL_START);
   const [endCoords, setEndCoords] = useState<LatLngExpression>(INITIAL_END);
-  
   const [routePoints, setRoutePoints] = useState<LatLngTuple[]>([]);
+  const [totalDistance, setTotalDistance] = useState<string | null>(null);
+  const [totalDuration, setTotalDuration] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Map reference
   const mapRef = useRef<L.Map | null>(null);
   
-  // Context menu for right-click actions
+  // Context menu state
   const [contextMenu, setContextMenu] = useState<ContextMenuState>({
     latlng: null,
     visible: false,
     position: { x: 0, y: 0 },
   });
-  
-  // Address displayed in context menu
   const [clickedAddress, setClickedAddress] = useState<string | null>(null);
 
+  // Initialize addresses from coordinates
   useEffect(() => {
     const fetchInitialAddresses = async () => {
       try {
@@ -70,13 +70,11 @@ const MapComponent: React.FC = () => {
         setStart(startAddress);
         setEnd(endAddress);
       } catch (err) {
-        console.error("Erreur lors du reverse geocoding initial:", err);
+        console.error("Error during initial reverse geocoding:", err);
       }
     };
-  
     fetchInitialAddresses();
   }, []);
-  
 
   // Fetch address when context menu is shown
   useEffect(() => {
@@ -84,7 +82,7 @@ const MapComponent: React.FC = () => {
     
     reverseGeocode(contextMenu.latlng.lat, contextMenu.latlng.lng)
       .then(setClickedAddress)
-      .catch(() => setClickedAddress("Adresse inconnue"));
+      .catch(() => setClickedAddress("Unknown address"));
   }, [contextMenu.latlng]);
 
   // Update map bounds when coordinates change
@@ -107,9 +105,14 @@ const MapComponent: React.FC = () => {
     return () => document.removeEventListener("contextmenu", handler);
   }, [contextMenu.visible]);
 
-  /**
-   * Updates coordinates and address when marker is moved or context menu option is selected
-   */
+  // Find route when addresses change
+  useEffect(() => {
+    if (start.trim() !== "" && end.trim() !== "") {
+      findRoute();
+    }
+  }, [start, end]);
+
+  // Update coordinates and address
   const updateCoordinates = async (latLng: L.LatLng, isStart: boolean) => {
     const coords: LatLngTuple = [latLng.lat, latLng.lng];
     
@@ -124,24 +127,20 @@ const MapComponent: React.FC = () => {
     try {
       const address = await reverseGeocode(latLng.lat, latLng.lng);
       
-      // Update address input
+      // Update address in input field
       if (isStart) {
         setStart(address);
       } else {
         setEnd(address);
       }
     } catch (error) {
-      console.error("Failed to reverse geocode:", error);
+      console.error("Reverse geocoding failed:", error);
     }
   };
   
-  /**
-   * Find route based on input addresses/coordinates
-   */
-  /**
-   * Find route based on input addresses/coordinates
-   */
+  // Find route based on inputs
   const findRoute = async () => {
+    setIsLoading(true);
     try {
       const startAsCoords = parseCoords(start);
       const endAsCoords = parseCoords(end);
@@ -175,69 +174,72 @@ const MapComponent: React.FC = () => {
       setStartCoords(startLatLng);
       setEndCoords(endLatLng);
   
-      // Envoi des coordonnées sous forme de tableaux [lat, lng]
+      // Send coordinates as [lng, lat] arrays
       const response = await fetch("http://localhost:3002/routes/calculate/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          start: [startLatLng[1], startLatLng[0]],  // [lng, lat] (ordre inversé)
-          end: [endLatLng[1], endLatLng[0]],      // [lng, lat] (ordre inversé)
+          start: [startLatLng[1], startLatLng[0]],  // [lng, lat] (reversed order)
+          end: [endLatLng[1], endLatLng[0]],        // [lng, lat] (reversed order)
           transport_mode: "driving-car"
         }),
       });
   
       if (!response.ok) {
-        throw new Error("Erreur API");
+        throw new Error("API Error");
       }
   
       const data = await response.json();
   
-      // Vérification et transformation des coordonnées dans `geometry.coordinates`
+      // Verify and transform coordinates
       const routeCoordinates = data.features[0]?.geometry?.coordinates;
+      const summary = data.features[0].properties.summary;
+
+      const totalDistanceKm = (summary.distance / 1000).toFixed(2); // in kilometers
+      const totalDurationMin = Math.round(summary.duration / 60);   // in minutes
+
+      setTotalDistance(totalDistanceKm);
+      setTotalDuration(totalDurationMin);
       
       if (routeCoordinates && Array.isArray(routeCoordinates)) {
         const latLngArray: LatLngTuple[] = routeCoordinates.map((coord: number[]) => {
-          // Convertir les coordonnées [lng, lat] en [lat, lng]
-          return [coord[1], coord[0]];  // [lat, lng] (ordre correct pour Leaflet)
+          // Convert [lng, lat] to [lat, lng]
+          return [coord[1], coord[0]];  // [lat, lng] (correct order for Leaflet)
         });
   
-        setRoutePoints(latLngArray); // Mettre à jour le tableau de points de la route
+        setRoutePoints(latLngArray);
       } else {
-        console.error("Les coordonnées de la route sont manquantes ou mal formatées.");
-        alert("Erreur de format des coordonnées.");
+        console.error("Route coordinates are missing or malformed.");
+        alert("Error in coordinate format.");
       }
     } catch (error) {
-      console.error("Erreur dans findRoute:", error);
-      alert("Erreur lors du calcul du chemin.");
+      console.error("Error in findRoute:", error);
+      alert("Error calculating route.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  /**
-   * Swap start and end addresses
-   */
+  // Swap start and end addresses
   const swapAddresses = () => {
     setStart(end);
     setEnd(start);
     
-    // Also swap the coords
+    // Also swap coordinates
     const tempCoords = startCoords;
     setStartCoords(endCoords);
     setEndCoords(tempCoords);
   };
 
-  /**
-   * Handle address selection from suggestions
-   */
+  // Handle address selection from suggestions
   const handleAddressSelection = async (label: string, isStart: boolean) => {
     try {
       const coords = await geocodeAddress(label);
       
-      // Ensure we have valid coordinates (not strings or null)
       if (!coords || !Array.isArray(coords)) {
         throw new Error("Invalid coordinates returned");
       }
       
-      // Check if this is a LatLngTuple (array of numbers) and not an array of strings
       if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
         const latLng = L.latLng(coords[0], coords[1]);
         updateCoordinates(latLng, isStart);
@@ -249,9 +251,7 @@ const MapComponent: React.FC = () => {
     }
   };
   
-  /**
-   * Handle map context menu (right-click)
-   */
+  // Handle map context menu (right-click)
   const handleContextMenu = (e: L.LeafletMouseEvent) => {
     const rect = mapRef.current?.getContainer().getBoundingClientRect();
     if (!rect) return;
@@ -266,9 +266,7 @@ const MapComponent: React.FC = () => {
     });
   };
   
-  /**
-   * Hide context menu on map click
-   */
+  // Hide context menu on map click
   const hideContextMenu = () => {
     setContextMenu((prev) => ({ ...prev, visible: false }));
   };
@@ -285,7 +283,7 @@ const MapComponent: React.FC = () => {
           {/* Starting point input */}
           <InputField
             label="Starting point (lat, long)"
-            placeholder="e.g., 2 rue Victor Hugo"
+            placeholder="e.g., 123 Main Street"
             value={start}
             setValue={setStart}
             onSelectSuggestion={(label) => handleAddressSelection(label, true)}
@@ -303,7 +301,7 @@ const MapComponent: React.FC = () => {
           {/* Destination input */}
           <InputField
             label="Destination (lat, long)"
-            placeholder="e.g., Place Sathonay"
+            placeholder="e.g., City Center"
             value={end}
             setValue={setEnd}
             onSelectSuggestion={(label) => handleAddressSelection(label, false)}
@@ -313,10 +311,28 @@ const MapComponent: React.FC = () => {
         {/* Find route button */}
         <button
           onClick={findRoute}
-          className="w-full mt-3 bg-dark-green text-white py-2 rounded-lg hover:bg-green-700 transition cursor-pointer"
+          disabled={isLoading}
+          className={`w-full mt-3 py-2 rounded-lg text-white transition
+            ${isLoading 
+              ? 'bg-green opacity-70 cursor-not-allowed' 
+              : 'bg-dark-green hover:bg-green cursor-pointer'}`}
         >
-          Find route
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <Loader2 className="animate-spin w-4 h-4" />
+              Calculating route...
+            </div>
+          ) : (
+            "Find route"
+          )}
         </button>
+
+        {routePoints && routePoints.length > 1 && (
+          <div className="mt-4 text-sm text-gray-700 dark:text-gray-200">
+            Distance: {totalDistance} km<br />
+            Duration: {totalDuration} minutes
+          </div>
+        )}
       </div>
 
       {/* Map */}
@@ -388,7 +404,7 @@ const MapComponent: React.FC = () => {
           }}
         >
           <div className="text-sm italic px-2 py-1">
-            {clickedAddress || "Chargement..."}
+            {clickedAddress || "Loading..."}
           </div>
 
           <div
