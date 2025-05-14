@@ -19,8 +19,8 @@ import InputField from "./input-field";
 import { geocodeAddress, parseCoords, reverseGeocode } from "./utils";
 
 // Constants
-const INITIAL_START: LatLngTuple = [45.748, 4.824];
-const INITIAL_END: LatLngTuple = [45.781, 4.868];
+const INITIAL_START: LatLngTuple = [45.7498895120524, 4.826977382148856];
+const INITIAL_END: LatLngTuple = [45.7816645, 4.8681545];
 
 // Default Leaflet icon setup
 const DefaultIcon = L.icon({
@@ -40,13 +40,15 @@ interface ContextMenuState {
 
 const MapComponent: React.FC = () => {
   // State for addresses
-  const [start, setStart] = useState<string>("45.748, 4.824");
-  const [end, setEnd] = useState<string>("45.781, 4.868");
+  const [start, setStart] = useState<string>("");
+  const [end, setEnd] = useState<string>("");
   
   // State for coordinates
   const [startCoords, setStartCoords] = useState<LatLngExpression>(INITIAL_START);
   const [endCoords, setEndCoords] = useState<LatLngExpression>(INITIAL_END);
   
+  const [routePoints, setRoutePoints] = useState<LatLngTuple[]>([]);
+
   // Map reference
   const mapRef = useRef<L.Map | null>(null);
   
@@ -59,6 +61,22 @@ const MapComponent: React.FC = () => {
   
   // Address displayed in context menu
   const [clickedAddress, setClickedAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchInitialAddresses = async () => {
+      try {
+        const startAddress = await reverseGeocode(INITIAL_START[0], INITIAL_START[1]);
+        const endAddress = await reverseGeocode(INITIAL_END[0], INITIAL_END[1]);
+        setStart(startAddress);
+        setEnd(endAddress);
+      } catch (err) {
+        console.error("Erreur lors du reverse geocoding initial:", err);
+      }
+    };
+  
+    fetchInitialAddresses();
+  }, []);
+  
 
   // Fetch address when context menu is shown
   useEffect(() => {
@@ -124,35 +142,73 @@ const MapComponent: React.FC = () => {
    * Find route based on input addresses/coordinates
    */
   const findRoute = async () => {
-    // Try to parse as coordinates first
-    const startAsCoords = parseCoords(start);
-    const endAsCoords = parseCoords(end);
-    
-    if (startAsCoords && endAsCoords) {
-      // Both inputs are valid coordinates
-      setStartCoords(startAsCoords);
-      setEndCoords(endAsCoords);
-      return;
-    }
-    
     try {
-      // Try geocoding inputs as addresses
-      const startFromGeocode = await geocodeAddress(start);
-      const endFromGeocode = await geocodeAddress(end);
-      
-      // Verify we have valid coordinate results
-      if (startFromGeocode && endFromGeocode && 
-          Array.isArray(startFromGeocode) && Array.isArray(endFromGeocode) &&
-          typeof startFromGeocode[0] === 'number' && typeof endFromGeocode[0] === 'number') {
-        
-        setStartCoords(startFromGeocode as LatLngTuple);
-        setEndCoords(endFromGeocode as LatLngTuple);
+      const startAsCoords = parseCoords(start);
+      const endAsCoords = parseCoords(end);
+  
+      let startLatLng: LatLngTuple;
+      let endLatLng: LatLngTuple;
+  
+      if (startAsCoords && endAsCoords) {
+        startLatLng = startAsCoords;
+        endLatLng = endAsCoords;
       } else {
-        alert("Invalid address or coordinates.");
+        const startFromGeocode = await geocodeAddress(start);
+        const endFromGeocode = await geocodeAddress(end);
+  
+        if (
+          startFromGeocode &&
+          endFromGeocode &&
+          Array.isArray(startFromGeocode) &&
+          Array.isArray(endFromGeocode) &&
+          typeof startFromGeocode[0] === "number" &&
+          typeof endFromGeocode[0] === "number"
+        ) {
+          startLatLng = startFromGeocode as LatLngTuple;
+          endLatLng = endFromGeocode as LatLngTuple;
+        } else {
+          alert("Invalid address or coordinates.");
+          return;
+        }
+      }
+  
+      setStartCoords(startLatLng);
+      setEndCoords(endLatLng);
+  
+      // Envoi des coordonnées sous forme de tableaux [lat, lng]
+      const response = await fetch("http://localhost:3002/routes/calculate/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          start: [startLatLng[1], startLatLng[0]],  // [lng, lat] (ordre inversé)
+          end: [endLatLng[1], endLatLng[0]],      // [lng, lat] (ordre inversé)
+          transport_mode: "driving-car"
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Erreur API");
+      }
+  
+      const data = await response.json();
+  
+      // Vérification et transformation des coordonnées dans `geometry.coordinates`
+      const routeCoordinates = data.features[0]?.geometry?.coordinates;
+      
+      if (routeCoordinates && Array.isArray(routeCoordinates)) {
+        const latLngArray: LatLngTuple[] = routeCoordinates.map((coord: number[]) => {
+          // Convertir les coordonnées [lng, lat] en [lat, lng]
+          return [coord[1], coord[0]];  // [lat, lng] (ordre correct pour Leaflet)
+        });
+  
+        setRoutePoints(latLngArray); // Mettre à jour le tableau de points de la route
+      } else {
+        console.error("Les coordonnées de la route sont manquantes ou mal formatées.");
+        alert("Erreur de format des coordonnées.");
       }
     } catch (error) {
-      console.error("Geocoding failed:", error);
-      alert("Error finding route. Please check your inputs.");
+      console.error("Erreur dans findRoute:", error);
+      alert("Erreur lors du calcul du chemin.");
     }
   };
 
@@ -229,7 +285,7 @@ const MapComponent: React.FC = () => {
           {/* Starting point input */}
           <InputField
             label="Starting point (lat, long)"
-            placeholder="e.g., 45.75, 4.85"
+            placeholder="e.g., 2 rue Victor Hugo"
             value={start}
             setValue={setStart}
             onSelectSuggestion={(label) => handleAddressSelection(label, true)}
@@ -247,7 +303,7 @@ const MapComponent: React.FC = () => {
           {/* Destination input */}
           <InputField
             label="Destination (lat, long)"
-            placeholder="e.g., 35.41, 139.41"
+            placeholder="e.g., Place Sathonay"
             value={end}
             setValue={setEnd}
             onSelectSuggestion={(label) => handleAddressSelection(label, false)}
@@ -316,13 +372,8 @@ const MapComponent: React.FC = () => {
         )}
         
         {/* Route line */}
-        {startCoords && endCoords && (
-          <Polyline 
-            positions={[startCoords, endCoords]} 
-            color="green" 
-            weight={4} 
-            opacity={0.7} 
-          />
+        {routePoints && routePoints.length > 1 && (
+          <Polyline positions={routePoints} color="green" weight={4}  />
         )}
       </MapContainer>
 
