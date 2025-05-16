@@ -65,17 +65,18 @@ export async function searchAddress(query: string): Promise<AddressResult[]> {
   }));
 }
 
-export const formatDuration = (totalMinutes: number | null) => {
-  if (totalMinutes === null) return "";
-  
-  if (totalMinutes < 60) {
-    return `${totalMinutes} minute${totalMinutes > 1 ? "s" : ""}`;
+export function formatDuration(minutes: number | null): string {
+  if (minutes === null) return "";
+  const hrs = Math.floor(minutes / 60);
+  const mins = minutes % 60;
+  return hrs > 0 ? `${hrs}h ${mins}min` : `${mins}min`;
+}
+
+export const fetchAndSetAddress = async (coords: LatLngTuple, setter: (addr: string) => void) => {
+  try {
+    const address = await reverseGeocode(coords[0], coords[1]);
+    setter(address);
+  } catch (err) {
+    console.error("Reverse geocoding failed:", err);
   }
-  
-  const hours = Math.floor(totalMinutes / 60);
-  const minutes = totalMinutes % 60;
-  
-  return minutes === 0 
-    ? `${hours} h${hours > 1 ? "s" : ""}` 
-    : `${hours}h ${minutes}m`;
 };

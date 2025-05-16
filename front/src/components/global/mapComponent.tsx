@@ -1,28 +1,19 @@
-import React, { useState, useRef, useEffect } from "react";
-import {
-  MapContainer,
-  TileLayer,
-  LayersControl,
-  Marker,
-  Popup,
-  Polyline,
-} from "react-leaflet";
-import { FaWalking, FaCar, FaBicycle, FaWheelchair, FaRoad, FaClock, FaLeaf, FaGasPump, FaFire, FaShoePrints } from "react-icons/fa";
-import { LatLngExpression, LatLngTuple } from "leaflet";
-import L from "leaflet";
+import { useState, useRef, useEffect } from "react";
+import { MapContainer, TileLayer, LayersControl, Marker, Popup, Polyline } from "react-leaflet";
+import L, { LatLngExpression, LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { Loader2 } from "lucide-react";
-import * as RadioGroup from "@radix-ui/react-radio-group";
-
-// Components
-import InputField from "./input-field";
-
-// Utils
-import { geocodeAddress, parseCoords, reverseGeocode, formatDuration } from "./utils";
+import InputField from "./inputField";
+import TransportOptions from "./transportOptions";
+import RouteInfo from "./routeInfos";
+import { geocodeAddress, reverseGeocode, fetchAndSetAddress } from "./utils";
+import { findRoute } from "./routeService";
 
 // Constants
-const INITIAL_START : LatLngTuple = [45.7498895120524, 4.826977382148856];
-const INITIAL_END : LatLngTuple = [45.7816645, 4.8681545];
+const INITIAL_START : LatLngTuple = [45.74988, 4.82697];
+const INITIAL_END : LatLngTuple = [45.78166, 4.86815];
+
+type TransportMode = "foot-walking" | "driving-car" | "cycling-regular" | "wheelchair";
 
 // Default Leaflet icon setup
 const DefaultIcon = L.icon({
@@ -50,26 +41,7 @@ const MapComponent: React.FC = () => {
   const [totalDistance, setTotalDistance] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMode, setSelectedMode] = useState<string>("foot-walking");
-
-  const options = [
-    {
-      value: "driving-car",
-      icon: <FaCar className="h-6 w-6 text-dark-green" />,
-    },
-    {
-      value: "cycling-regular",
-      icon: <FaBicycle className="h-6 w-6 text-dark-green" />,
-    },
-    {
-      value: "foot-walking",
-      icon: <FaWalking className="h-6 w-6 text-dark-green" />,
-    },
-    {
-      value: "wheelchair",
-      icon: <FaWheelchair className="h-6 w-6 text-dark-green" />,
-    },
-  ];
+  const [selectedMode, setSelectedMode] = useState<TransportMode>("foot-walking");
 
   // Map reference
   const mapRef = useRef<L.Map | null>(null);
@@ -84,19 +56,10 @@ const MapComponent: React.FC = () => {
 
   // Initialize addresses from coordinates
   useEffect(() => {
-    const fetchInitialAddresses = async () => {
-      try {
-        const startAddress = await reverseGeocode(INITIAL_START[0], INITIAL_START[1]);
-        const endAddress = await reverseGeocode(INITIAL_END[0], INITIAL_END[1]);
-        setStart(startAddress);
-        setEnd(endAddress);
-      } catch (err) {
-        console.error("Error during initial reverse geocoding:", err);
-      }
-    };
-    fetchInitialAddresses();
+    fetchAndSetAddress(INITIAL_START, setStart);
+    fetchAndSetAddress(INITIAL_END, setEnd);
   }, []);
-
+  
   // Fetch address when context menu is shown
   useEffect(() => {
     if (!contextMenu.latlng) return;
@@ -112,7 +75,7 @@ const MapComponent: React.FC = () => {
     
     mapRef.current.fitBounds(
       [startCoords as LatLngTuple, endCoords as LatLngTuple], 
-      { padding: [150, 150] }
+      { padding: [185, 185] }
     );
   }, [startCoords, endCoords]);
 
@@ -126,21 +89,15 @@ const MapComponent: React.FC = () => {
     return () => document.removeEventListener("contextmenu", handler);
   }, [contextMenu.visible]);
 
-  // Find route when addresses change
+  // Find route when addresses or selectedMode change
   useEffect(() => {
     if (start.trim() !== "" && end.trim() !== "") {
-      findRoute();
+      fetchRoute();
     }
-  }, [start, end]);
-
-  useEffect(() => {
-    if (start.trim() !== "" && end.trim() !== "") {
-      findRoute();
-    }
-  }, [selectedMode]);
+  }, [start, end, selectedMode]);
 
   // Update coordinates and address
-  const updateCoordinates = async (latLng: L.LatLng, isStart: boolean) => {
+  const setMarkerPositionAndAddress = async (latLng: L.LatLng, isStart: boolean) => {
     const coords: LatLngTuple = [latLng.lat, latLng.lng];
     
     // Update coordinates
@@ -166,82 +123,19 @@ const MapComponent: React.FC = () => {
   };
   
   // Find route based on inputs
-  const findRoute = async () => {
+  const fetchRoute = async () => {
     setIsLoading(true);
     try {
-      const startAsCoords = parseCoords(start);
-      const endAsCoords = parseCoords(end);
-  
-      let startLatLng: LatLngTuple;
-      let endLatLng: LatLngTuple;
-  
-      if (startAsCoords && endAsCoords) {
-        startLatLng = startAsCoords;
-        endLatLng = endAsCoords;
-      } else {
-        const startFromGeocode = await geocodeAddress(start);
-        const endFromGeocode = await geocodeAddress(end);
-  
-        if (
-          startFromGeocode &&
-          endFromGeocode &&
-          Array.isArray(startFromGeocode) &&
-          Array.isArray(endFromGeocode) &&
-          typeof startFromGeocode[0] === "number" &&
-          typeof endFromGeocode[0] === "number"
-        ) {
-          startLatLng = startFromGeocode as LatLngTuple;
-          endLatLng = endFromGeocode as LatLngTuple;
-        } else {
-          alert("Invalid address or coordinates.");
-          return;
-        }
-      }
-  
-      setStartCoords(startLatLng);
-      setEndCoords(endLatLng);
-  
-      // Send coordinates as [lng, lat] arrays
-      const response = await fetch("http://localhost:3002/routes/calculate/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          start: [startLatLng[1], startLatLng[0]],  // [lng, lat] (reversed order)
-          end: [endLatLng[1], endLatLng[0]],        // [lng, lat] (reversed order)
-          transport_mode: selectedMode // Pass selected modes
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error("API Error");
-      }
-  
-      const data = await response.json();
-  
-      // Verify and transform coordinates
-      const routeCoordinates = data.features[0]?.geometry?.coordinates;
-      const summary = data.features[0].properties.summary;
+      const result = await findRoute(start, end, selectedMode);
 
-      const totalDistanceKm = (summary.distance / 1000).toFixed(2); // in kilometers
-      const totalDurationMin = Math.round(summary.duration / 60);   // in minutes
-
-      setTotalDistance(totalDistanceKm);
-      setTotalDuration(totalDurationMin);
-      
-      if (routeCoordinates && Array.isArray(routeCoordinates)) {
-        const latLngArray: LatLngTuple[] = routeCoordinates.map((coord: number[]) => {
-          // Convert [lng, lat] to [lat, lng]
-          return [coord[1], coord[0]];  // [lat, lng] (correct order for Leaflet)
-        });
-  
-        setRoutePoints(latLngArray);
-      } else {
-        console.error("Route coordinates are missing or malformed.");
-        alert("Error in coordinate format.");
-      }
+      setRoutePoints(result.routePoints);
+      setTotalDistance(result.totalDistanceKm);
+      setTotalDuration(result.totalDurationMin);
+      setStartCoords(result.startCoords);
+      setEndCoords(result.endCoords);
     } catch (error) {
-      console.error("Error in findRoute:", error);
-      alert("Error calculating route.");
+      console.error(error);
+      alert("Erreur lors du calcul de l'itinéraire.");
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +152,7 @@ const MapComponent: React.FC = () => {
       
       if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
         const latLng = L.latLng(coords[0], coords[1]);
-        updateCoordinates(latLng, isStart);
+        setMarkerPositionAndAddress(latLng, isStart);
       } else {
         throw new Error("Coordinates in incorrect format");
       }
@@ -317,26 +211,12 @@ const MapComponent: React.FC = () => {
 
         {/* Transport options */}
         <div id="transport-options" className="flex mt-4 mb-2">
-          <RadioGroup.Root
-            value={selectedMode}
-            onValueChange={setSelectedMode}
-            className="max-w-sm w-full grid grid-cols-4 gap-3"
-          >
-            {options.map((option) => (
-              <RadioGroup.Item
-                key={option.value}
-                value={option.value}
-                className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)] cursor-pointer"
-              >
-                <span className="tracking-tight">{option.icon}</span>
-              </RadioGroup.Item>
-            ))}
-          </RadioGroup.Root>
+          <TransportOptions onChange={(value: string) => setSelectedMode(value as TransportMode)} selectedMode={selectedMode} />
         </div>
         
         {/* Find route button */}
         <button
-          onClick={findRoute}
+          onClick={fetchRoute}
           disabled={isLoading}
           className={`w-full mt-3 py-2 rounded-lg text-white transition
             ${isLoading 
@@ -354,53 +234,13 @@ const MapComponent: React.FC = () => {
         </button>
 
         {routePoints && routePoints.length > 1 && (
-          <div className="mt-4 text-sm text-gray-700 dark:text-gray-200 flex justify-between">
-            {/* Bloc gauche : distance + durée */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <FaRoad className="text-dark-green" />
-                <span className="font-medium">{totalDistance} km</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <FaClock className="text-dark-green" />
-                <span className="font-medium">{formatDuration(totalDuration)}</span>
-              </div>
-            </div>
-
-            {/* Bloc droite : CO2 + donnée spécifique au véhicule */}
-            <div className="space-y-2 text-left">
-              <div className="flex items-center gap-2 justify-start">
-                <FaLeaf className="text-dark-green" />
-                <span className="font-medium">20.34 kg CO₂</span> {/* TODO : requete API */}
-              </div>
-              <div className="flex items-center gap-2 justify-end">
-                {selectedMode === 'driving-car' && (
-                  <>
-                    <FaGasPump className="text-dark-green" />
-                    <span className="font-medium">2.63 L estimés</span> {/* TODO : requete API */}
-                  </>
-                )}
-                {selectedMode === 'cycling-regular' && (
-                  <>
-                    <FaFire className="text-dark-green" />
-                    <span className="font-medium">4239 kcal brûlées</span> {/* TODO : requete API */}
-                  </>
-                )}
-                {selectedMode === 'foot-walking' && (
-                  <>
-                    <FaShoePrints className="text-dark-green" />
-                    <span className="font-medium">5367 pas estimés</span> {/* TODO : requete API */}
-                  </>
-                )}
-                {selectedMode === 'wheelchair' && (
-                  <>
-                    <FaFire className="text-dark-green" />
-                    <span className="font-medium">3189 kcal brûlées</span> {/* TODO : requete API */}
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
+         <RouteInfo
+            totalDistance={totalDistance}
+            totalDuration={totalDuration}
+            co2Emission="20.34"
+            energy="3420"
+            selectedMode={selectedMode}
+          />
         )}
 
       </div>
@@ -437,7 +277,7 @@ const MapComponent: React.FC = () => {
             position={startCoords}
             draggable
             eventHandlers={{ 
-              dragend: (e) => updateCoordinates(e.target.getLatLng(), true) 
+              dragend: (e) => setMarkerPositionAndAddress(e.target.getLatLng(), true) 
             }}
           >
             <Popup>Starting Point</Popup>
@@ -450,7 +290,7 @@ const MapComponent: React.FC = () => {
             position={endCoords}
             draggable
             eventHandlers={{ 
-              dragend: (e) => updateCoordinates(e.target.getLatLng(), false) 
+              dragend: (e) => setMarkerPositionAndAddress(e.target.getLatLng(), false) 
             }}
           >
             <Popup>Destination</Popup>
@@ -479,7 +319,7 @@ const MapComponent: React.FC = () => {
 
           <div
             onClick={() => {
-              updateCoordinates(contextMenu.latlng!, true);
+              setMarkerPositionAndAddress(contextMenu.latlng!, true);
               hideContextMenu();
             }}
             className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded"
@@ -489,7 +329,7 @@ const MapComponent: React.FC = () => {
           
           <div
             onClick={() => {
-              updateCoordinates(contextMenu.latlng!, false);
+              setMarkerPositionAndAddress(contextMenu.latlng!, false);
               hideContextMenu();
             }}
             className="cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 rounded"

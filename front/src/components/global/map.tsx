@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 
 // Chargement dynamique du composant Map avec désactivation du SSR
 const MapWithNoSSR = dynamic(
-  () => import("./map-component"),
+  () => import("./mapComponent"),
   {
     ssr: false, // Désactive le rendu côté serveur
     loading: () => <p>Chargement de la carte...</p>
