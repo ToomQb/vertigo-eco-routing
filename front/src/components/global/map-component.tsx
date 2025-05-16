@@ -7,7 +7,7 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import { FaWalking, FaCar, FaBicycle, FaWheelchair } from "react-icons/fa";
+import { FaWalking, FaCar, FaBicycle, FaWheelchair, FaRoad, FaClock, FaLeaf, FaGasPump, FaFire, FaShoePrints } from "react-icons/fa";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -133,6 +133,12 @@ const MapComponent: React.FC = () => {
     }
   }, [start, end]);
 
+  useEffect(() => {
+    if (start.trim() !== "" && end.trim() !== "") {
+      findRoute();
+    }
+  }, [selectedMode]);
+
   // Update coordinates and address
   const updateCoordinates = async (latLng: L.LatLng, isStart: boolean) => {
     const coords: LatLngTuple = [latLng.lat, latLng.lng];
@@ -241,17 +247,6 @@ const MapComponent: React.FC = () => {
     }
   };
 
-  // Swap start and end addresses
-  const swapAddresses = () => {
-    setStart(end);
-    setEnd(start);
-    
-    // Also swap coordinates
-    const tempCoords = startCoords;
-    setStartCoords(endCoords);
-    setEndCoords(tempCoords);
-  };
-
   // Handle address selection from suggestions
   const handleAddressSelection = async (label: string, isStart: boolean) => {
     try {
@@ -331,7 +326,7 @@ const MapComponent: React.FC = () => {
               <RadioGroup.Item
                 key={option.value}
                 value={option.value}
-                className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)]"
+                className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)] cursor-pointer"
               >
                 <span className="tracking-tight">{option.icon}</span>
               </RadioGroup.Item>
@@ -359,11 +354,55 @@ const MapComponent: React.FC = () => {
         </button>
 
         {routePoints && routePoints.length > 1 && (
-          <div className="mt-4 text-sm text-gray-700 dark:text-gray-200">
-            Distance: {totalDistance} km<br />
-            Duration: {formatDuration(totalDuration)}
+          <div className="mt-4 text-sm text-gray-700 dark:text-gray-200 flex justify-between">
+            {/* Bloc gauche : distance + durée */}
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <FaRoad className="text-dark-green" />
+                <span className="font-medium">{totalDistance} km</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <FaClock className="text-dark-green" />
+                <span className="font-medium">{formatDuration(totalDuration)}</span>
+              </div>
+            </div>
+
+            {/* Bloc droite : CO2 + donnée spécifique au véhicule */}
+            <div className="space-y-2 text-left">
+              <div className="flex items-center gap-2 justify-start">
+                <FaLeaf className="text-dark-green" />
+                <span className="font-medium">20.34 kg CO₂</span> {/* TODO : requete API */}
+              </div>
+              <div className="flex items-center gap-2 justify-end">
+                {selectedMode === 'driving-car' && (
+                  <>
+                    <FaGasPump className="text-dark-green" />
+                    <span className="font-medium">2.63 L estimés</span> {/* TODO : requete API */}
+                  </>
+                )}
+                {selectedMode === 'cycling-regular' && (
+                  <>
+                    <FaFire className="text-dark-green" />
+                    <span className="font-medium">4239 kcal brûlées</span> {/* TODO : requete API */}
+                  </>
+                )}
+                {selectedMode === 'foot-walking' && (
+                  <>
+                    <FaShoePrints className="text-dark-green" />
+                    <span className="font-medium">5367 pas estimés</span> {/* TODO : requete API */}
+                  </>
+                )}
+                {selectedMode === 'wheelchair' && (
+                  <>
+                    <FaFire className="text-dark-green" />
+                    <span className="font-medium">3189 kcal brûlées</span> {/* TODO : requete API */}
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         )}
+
       </div>
 
       {/* Map */}

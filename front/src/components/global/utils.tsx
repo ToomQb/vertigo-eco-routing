@@ -76,6 +76,6 @@ export const formatDuration = (totalMinutes: number | null) => {
   const minutes = totalMinutes % 60;
   
   return minutes === 0 
-    ? `${hours} heure${hours > 1 ? "s" : ""}` 
-    : `${hours} heure${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""}`;
+    ? `${hours} h${hours > 1 ? "s" : ""}` 
+    : `${hours}h ${minutes}m`;
 };
