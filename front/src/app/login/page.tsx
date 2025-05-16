@@ -62,7 +62,7 @@ const SignInPage = () => {
             </Link>
           </div>
 
-          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2 cursor-pointer">
+          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2 cursor-pointer bg-dark-green">
             <FaSignInAlt />
             Sign In
           </Button>

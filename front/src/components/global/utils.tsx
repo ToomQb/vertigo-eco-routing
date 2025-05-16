@@ -64,3 +64,18 @@ export async function searchAddress(query: string): Promise<AddressResult[]> {
     lon: result.lon,
   }));
 }
+
+export const formatDuration = (totalMinutes: number | null) => {
+  if (totalMinutes === null) return "";
+  
+  if (totalMinutes < 60) {
+    return `${totalMinutes} minute${totalMinutes > 1 ? "s" : ""}`;
+  }
+  
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  
+  return minutes === 0 
+    ? `${hours} heure${hours > 1 ? "s" : ""}` 
+    : `${hours} heure${hours > 1 ? "s" : ""} ${minutes} minute${minutes > 1 ? "s" : ""}`;
+};

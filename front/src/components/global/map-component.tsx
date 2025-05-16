@@ -7,7 +7,7 @@ import {
   Popup,
   Polyline,
 } from "react-leaflet";
-import { FaExchangeAlt, FaWalking, FaCar, FaBicycle, FaWheelchair } from "react-icons/fa";
+import { FaWalking, FaCar, FaBicycle, FaWheelchair } from "react-icons/fa";
 import { LatLngExpression, LatLngTuple } from "leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -18,7 +18,7 @@ import * as RadioGroup from "@radix-ui/react-radio-group";
 import InputField from "./input-field";
 
 // Utils
-import { geocodeAddress, parseCoords, reverseGeocode } from "./utils";
+import { geocodeAddress, parseCoords, reverseGeocode, formatDuration } from "./utils";
 
 // Constants
 const INITIAL_START : LatLngTuple = [45.7498895120524, 4.826977382148856];
@@ -310,15 +310,6 @@ const MapComponent: React.FC = () => {
             onSelectSuggestion={(label) => handleAddressSelection(label, true)}
           />
           
-          {/* Swap button */}
-          <button
-            onClick={swapAddresses}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 p-2 my-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition cursor-pointer"
-            aria-label="Swap addresses"
-          >
-            <FaExchangeAlt className="text-gray-600 dark:text-gray-300" size={18} />
-          </button>
-          
           {/* Destination input */}
           <InputField
             label="Destination (lat, long)"
@@ -370,7 +361,7 @@ const MapComponent: React.FC = () => {
         {routePoints && routePoints.length > 1 && (
           <div className="mt-4 text-sm text-gray-700 dark:text-gray-200">
             Distance: {totalDistance} km<br />
-            Duration: {totalDuration} minutes
+            Duration: {formatDuration(totalDuration)}
           </div>
         )}
       </div>
