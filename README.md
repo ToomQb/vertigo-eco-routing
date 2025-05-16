@@ -1,112 +1,117 @@
+# EcoRoute - Computer Science Master's 2024-2025
 
-## Back-end
+## Table of Contents
+- [Technologies Used](#technologies-used)
+- [Project Structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Installation and Configuration](#installation-and-configuration)
+  - [Environment Variables](#environment-variables)
+  - [Database Setup](#database-setup)
+- [Running Applications](#running-applications)
+- [Testing](#testing)
+- [API Documentation](#api-documentation)
+- [Database Migration (Alembic)](#database-migration-alembic)
+- [Contributing](#contributing)
 
-### Structure
+## Technologies Used
 
-```bash
+### Backend
+- Python 3.10+
+- FastAPI
+- PostgreSQL
+- Alembic
+- Docker (for database)
+
+### Frontend
+- Node.js v20.19.2
+- npm v10.8.2
+- TypeScript
+- React
+- Next.js
+- shadcn/ui
+- Tailwind CSS
+
+### Tools
+- Uvicorn (ASGI server)
+- pip (Python dependency management)
+- npm (Node.js dependency management)
+
+## Project Structure
+
+```
 .
 ├── back
-│   ├── app  # Contains the main application files.
-│   │   ├── __init__.py  # This is what allows importing code from one file into another.
-│   │   ├── main.py      # Initializes the FastAPI application.
-│   │   ├── alembic.ini  # config file for alembic
-│   │   ├── routers
-│   │   │   ├── __init__.py
-│   │   │   └── .  # Defines routes and endpoints
-│   │   ├── config
-│   │   │   ├── __init__.py
-│   │   │   └── database.py  # Defines database config.
-│   │   ├── models
-│   │   │   ├── __init__.py
-│   │   │   └── .  # Defines database models.
-│   │   ├── crud
-│   │   │   ├── __init__.py
-│   │   │   └── .  # Defines CRUD operations.
-│   │   ├── schemas
-│   │   │   ├── __init__.py
-│   │   │   └── . # Defines schemas (pydantic).
-│   │   ├── services
-│   │   │   ├── __init__.py
-│   │   │   └── . # Defines usefull and resusable function (to avoid too big controllers in routers/)
-│   │   ├── external_services
-│   │   │   ├── __init__.py
-│   │   │   ├── email.py          # Defines functions for sending emails.
-│   │   │   └── notification.py   # Defines functions for sending notifications
-│   │   └── alembic
-│   │       └── .
-│   ├── tests
-│   │   ├── __init__.py
-│   │   ├── test_main.py
-│   │   └── test_xxx.py # Tests for the xxx module.
-│   └── requirements.txt
+│   ├── app
+│   │   ├── main.py           # FastAPI entry point
+│   │   ├── routers           # API routes
+│   │   ├── config            # Database configuration
+│   │   ├── models            # ORM models
+│   │   ├── crud              # CRUD operations
+│   │   ├── schemas           # Pydantic schemas
+│   │   ├── services          # Utility functions
+│   │   ├── external_services # Emails, notifications
+│   │   └── alembic           # Migrations
+│   ├── tests                 # Backend tests
+│   └── requirements.txt      # Python dependencies
 ├── front
-│   ├── .
-│   .
+│   ├── node_modules
+│   ├── public
+│   ├── src
+│   │   ├── app               # Next.js pages
+│   │   ├── components        # React components
+│   │   │   ├── global        # Global components (navbar, map, input, theme...)
+│   │   │   ├── ui            # shadcn/ui primitives
+│   │   ├── lib               # Libraries, helpers
+│   ├── package.json          # Node.js dependencies, npm scripts
+│   └── tsconfig.json         # TypeScript configuration
 ```
 
-### Getting Started
+## Prerequisites
 
-1. [Create a virtual environment](#create-virtual-environment)
-1. [Activate the virtual environment](#activate-virtual-environment)
-1. [Install the dependencies](#install-dependencies)
-1. [Setup environment variables](#setup-environment-variables)
-1. [Create database](#create-database)
-1. [Run the application](#run-the-application)
+- Python 3.10+
+- Node.js v20.19.2 (with npm v10.8.2)
+- Docker (for PostgreSQL database)
+- OpenSSL (for generating a secret key if needed)
 
-### Virtual environment
+## Installation and Configuration
 
-#### Create virtual environment
-
+### 1. Create and activate Python virtual environment (backend)
 ```bash
+cd back
 python3 -m venv venv
+source venv/bin/activate   # (Linux/macOS)
+# On Windows PowerShell: .\venv\Scripts\Activate.ps1
 ```
 
-#### Activate virtual environment
-
-| Platform | Shell      | Command to activate virtual environment |
-| -------- | ---------- | --------------------------------------- |
-| POSIX    | bash/zsh   | `$ source <venv>/bin/activate`          |
-| POSIX    | fish       | `$ source <venv>/bin/activate.fish`     |
-| POSIX    | csh/tcsh   | `$ source <venv>/bin/activate.csh`      |
-| POSIX    | PowerShell | `$ <venv>/bin/Activate.ps1`             |
-| Windows  | cmd.exe    | `C:\> <venv>\Scripts\activate.bat`      |
-| Windows  | PowerShell | `PS C:\> <venv>\Scripts\Activate.ps1`   |
-
-#### Deactivate virtual environment
-
-```bash
-deactivate
-```
-
-#### Install dependencies
-
+### 2. Install Python dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run the application
-
+### 3. Install Node.js dependencies (frontend)
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 3002 #from back/
+cd ../front
+npm install
 ```
 
-### Test types
+### Global Option
+To automate everything, you can create a bash script at the root that does everything at once:
 
 ```bash
-pyright
+#!/bin/bash
+cd back && python3 -m venv venv && source venv/bin/activate && pip install -r requirements.txt
+cd ../front && npm install
 ```
 
-### Setup environment Variables
+### Environment Variables
 
-Create a `.env` file (back/.env) and add the following environment variables:
+Create a `.env` file in the `back/` directory with at least:
 
-```bash
-ORS_API_KEY = "your_openrouteservice_api_key"
-# to get a string like this run:
-# openssl rand -hex 32
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+```env
+ORS_API_KEY="your_openrouteservice_key"
+SECRET_KEY="09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 
 DATABASE_USERNAME=postgres
 DATABASE_PASSWORD=mysecretpassword
@@ -115,31 +120,74 @@ DATABASE_NAME=db_name
 DATABASE_PORT=5432
 ```
 
-### Database
+To generate a SECRET_KEY, you can use the command:
 
-#### Create database
+```bash
+openssl rand -hex 32
+```
+
+### Database Setup
+
+Launch PostgreSQL in a Docker container:
 
 ```bash
 docker run -p 127.0.0.1:5432:5432 --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+```
 
+Connect to PostgreSQL and create the database:
+
+```bash
 docker exec -it some-postgres psql -U postgres
 # or
 psql -h localhost -U postgres
 
 CREATE DATABASE db_name;
-
-\q # Quit psql
+\q
 ```
 
-### API docs (Swagger)
+## Running Applications
 
-```
-/docs
-```
-
-### Alembic commands
+### Backend
+From the `back/` folder (with virtual environment activated):
 
 ```bash
-alembic revision --autogenerate -m "message de migration"
+uvicorn app.main:app --host 0.0.0.0 --port 3002
+```
+
+### Frontend
+From the `front/` folder:
+
+```bash
+npm run dev
+```
+
+## Testing
+
+- **Backend**: Use Pyright for static typing, unit tests are in `back/tests/`
+- **Frontend**: According to what is set up (to be specified)
+
+## API Documentation
+
+Once the backend is running, access the Swagger documentation at:
+
+```
+http://localhost:3002/docs
+```
+
+## Database Migration (Alembic)
+
+To create a migration after modifying models:
+
+```bash
+alembic revision --autogenerate -m "migration message"
 alembic upgrade head
 ```
+
+## Contributing
+
+1. Fork & clone the repository
+2. Create a feature/bugfix branch with a descriptive name
+3. Follow the code structure (backend and frontend)
+4. Write clear commit messages
+5. Open a Pull Request for review
+6. Ask questions if needed
