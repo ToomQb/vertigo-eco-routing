@@ -156,3 +156,10 @@ html, body, #__next {
   padding: 0;
   overflow: hidden;
 }
+
+.about-page {
+  overflow-y: auto;
+  height: 100vh;
+}
+
+

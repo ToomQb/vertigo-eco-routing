@@ -161,10 +161,47 @@ From the `front/` folder:
 npm run dev
 ```
 
+
 ## Testing
 
-- **Backend**: Use Pyright for static typing, unit tests are in `back/tests/`
-- **Frontend**: According to what is set up (to be specified)
+- **Backend**: Use Pyright for static typing, unit tests are located in `back/tests/`
+
+- **Frontend**: Unit tests with Vitest
+
+  1. **Configure Vitest**
+
+     - Create (or modify) a `vite.config.ts` file at the root of the `front` folder with the following content:
+
+     ```ts
+     /// <reference types="vitest" />
+     import { defineConfig } from 'vite';
+     import react from '@vitejs/plugin-react';
+
+     export default defineConfig({
+       plugins: [react()],
+       test: {
+         globals: true,          // Allows using `describe`, `it`, etc. without imports
+         environment: 'jsdom',   // Simulates a DOM environment for tests
+         setupFiles: './src/setupTests.ts', // Optional setup file run before tests
+       },
+     });
+     ```
+
+  2. **Install necessary dependencies**
+
+     ```bash
+     npm install -D vitest @vitejs/plugin-react @testing-library/react @testing-library/jest-dom
+     ```
+
+  3. **Write tests**
+
+     - Place your test files inside `front/src` close to your components, e.g. `front/src/components/navbar.test.tsx`.
+
+  4. **Run tests**
+
+     ```bash
+     npm run test
+     ```
 
 ## API Documentation
 

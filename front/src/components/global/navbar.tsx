@@ -48,7 +48,7 @@ const CompanyLogoLink = () => {
   return (
     <Link href="/" className="flex items-center gap-2 px-3 h-[40px]">
       <span className="font-medium text-lg leading-none text-dark-green dark:text-white flex items-center h-full">
-        Nom projet
+        EcoRoute
       </span>
     </Link>
   );
