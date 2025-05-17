@@ -13,7 +13,7 @@ vi.mock('next/dynamic', async () => {
   };
 });
 
-import Map from '../map';
+import Map from '../components/global/map';
 
 describe('Map', () => {
   it('renders the dynamically imported map component', () => {

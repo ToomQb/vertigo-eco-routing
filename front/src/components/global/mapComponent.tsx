@@ -187,7 +187,7 @@ const MapComponent: React.FC = () => {
   return (
     <div className="relative w-full z-1">
       {/* UI Panel */}
-      <div className="absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[300px] z-[1000]">
+      <div className="absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[350px] z-[1000]">
         <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
           Plan your route
         </h2>

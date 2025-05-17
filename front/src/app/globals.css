@@ -46,7 +46,7 @@
 
 :root {
   --radius: 0.625rem;
-  --green: #6a994e;
+  --light-green: #e0f3d2;
   --dark-green: #3b6b37;
   --light: #fafafa;
   --beige: #f2e8cf;
@@ -86,8 +86,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
   
-.bg-green { background-color: var(--green); }
-.text-green { color: var(--green); }
+.bg-green { background-color: var(--light-green); }
+.text-green { color: var(--light-green); }
 
 .bg-dark-green { background-color: var(--dark-green); }
 .text-dark-green { color: var(--dark-green); }
@@ -154,12 +154,13 @@ html, body, #__next {
   height: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.about-page {
+/* .about-page {
   overflow-y: auto;
   height: 100vh;
-}
+} */
 
 

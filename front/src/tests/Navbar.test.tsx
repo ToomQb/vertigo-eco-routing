@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import HeaderOnlyLayout from '../navbar';
+import HeaderOnlyLayout from '../components/global/navbar';
 import { usePathname } from 'next/navigation';
 
 vi.mock('next/navigation', () => ({
