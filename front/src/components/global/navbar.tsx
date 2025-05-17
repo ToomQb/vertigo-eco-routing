@@ -19,7 +19,7 @@ const HeaderOnlyLayout = () => {
   const pathname = usePathname();
 
   return (
-    <div className="bg-white dark:bg-dark-green flex flex-col w-screen">
+    <div className="bg-light dark:bg-dark-green flex flex-col w-screen">
       <header className="flex justify-between items-center px-6 py-6 z-50 relative border-b border-dark-green border-b-2">
         <div className="flex items-center gap-8">
           <CompanyLogoLink />

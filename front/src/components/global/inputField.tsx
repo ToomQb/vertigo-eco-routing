@@ -19,23 +19,37 @@ const InputField: React.FC<Props> = ({ label, placeholder, value, setValue, onSe
     if (!isTyping) return;
 
     const timer = setTimeout(async () => {
-      if (value.length > 3) {
-        const results: AddressResult[] = await searchAddress(value);
-        setSuggestions(results.map((r) => r.label));
-        setShowSuggestions(true);
+      const trimmedValue = value.trim();
+      if (trimmedValue.length > 3) {
+        const results: AddressResult[] = await searchAddress(trimmedValue);
+
+        const uniqueLabels = Array.from(new Set(results.map((r) => r.label)));
+
+        if (uniqueLabels.length > 0) {
+          setSuggestions(uniqueLabels);
+          setShowSuggestions(true);
+        } else {
+          setSuggestions([]);
+          setShowSuggestions(false);
+        }
       } else {
         setSuggestions([]);
         setShowSuggestions(false);
       }
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [value, isTyping]);
 
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setIsTyping(true);
-    setValue(e.target.value);
+    const newValue = e.target.value;
+    setValue(newValue);
+
+    // Defined as "writing" only if more than 2 non-empty characters
+    setIsTyping(newValue.trim().length > 2);
   };
+
 
   const handleBlur = () => {
     setTimeout(() => {
@@ -65,7 +79,7 @@ const InputField: React.FC<Props> = ({ label, placeholder, value, setValue, onSe
         onBlur={handleBlur}
       />
       {showSuggestions && (
-        <ul className="absolute z-50 bg-white dark:bg-gray-700 shadow-md w-full mt-1 rounded max-h-40 overflow-auto">
+        <ul className="absolute z-50 bg-light dark:bg-gray-700 shadow-md w-full mt-1 rounded max-h-40 overflow-auto">
           {suggestions.map((s, idx) => (
             <li
               key={idx}

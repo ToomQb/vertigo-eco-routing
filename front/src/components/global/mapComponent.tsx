@@ -91,10 +91,14 @@ const MapComponent: React.FC = () => {
 
   // Find route when addresses or selectedMode change
   useEffect(() => {
-    if (start.trim() !== "" && end.trim() !== "") {
+    if (start && end) {
       fetchRoute();
     }
-  }, [start, end, selectedMode]);
+  }, [selectedMode]);
+
+  useEffect(() => {
+    setRoutePoints([]);
+  }, [start, end]);
 
   // Update coordinates and address
   const setMarkerPositionAndAddress = async (latLng: L.LatLng, isStart: boolean) => {
@@ -184,7 +188,7 @@ const MapComponent: React.FC = () => {
   return (
     <div className="relative w-full z-1">
       {/* UI Panel */}
-      <div className="absolute top-16 left-8 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[300px] z-[1000]">
+      <div className="absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[300px] z-[1000]">
         <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
           Plan your route
         </h2>
@@ -306,7 +310,7 @@ const MapComponent: React.FC = () => {
       {/* Context Menu */}
       {contextMenu.visible && contextMenu.latlng && (
         <div
-          className="absolute bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 shadow-lg rounded-md z-[2000]"
+          className="absolute bg-light dark:bg-gray-800 border border-gray-300 dark:border-gray-700 shadow-lg rounded-md z-[2000]"
           style={{ 
             top: contextMenu.position.y, 
             left: contextMenu.position.x, 

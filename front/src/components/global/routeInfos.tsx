@@ -19,7 +19,6 @@ const RouteInfo: React.FC<RouteInfoProps> = ({
 }) => {
   return (
     <div className="mt-4 text-sm text-gray-700 dark:text-gray-200 flex justify-between">
-      {/* Bloc gauche : distance + durée */}
       <div className="space-y-2">
         <div className="flex items-center gap-2">
           <FaRoad className="text-dark-green" />
@@ -30,8 +29,6 @@ const RouteInfo: React.FC<RouteInfoProps> = ({
           <span className="font-medium">{formatDuration(totalDuration)}</span>
         </div>
       </div>
-
-      {/* Bloc droite : CO2 + donnée spécifique au véhicule */}
       <div className="space-y-2 text-left">
         <div className="flex items-center gap-2 justify-start">
           <FaLeaf className="text-dark-green" />

@@ -1,7 +1,6 @@
 // src/services/routeService.tsx
 import { LatLngTuple } from "leaflet";
-import { geocodeAddress } from "./utils"; // ou ton fichier réel
-import { parseCoords } from "./utils"; // ou ton fichier réel
+import { geocodeAddress, parseCoords } from "./utils";
 
 export interface RouteResult {
   routePoints: LatLngTuple[];

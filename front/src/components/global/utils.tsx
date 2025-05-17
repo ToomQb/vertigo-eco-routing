@@ -58,11 +58,30 @@ export async function searchAddress(query: string): Promise<AddressResult[]> {
   const res = await fetch(url);
   const data: NominatimResult[] = await res.json();
 
-  return data.map((result) => ({
-    label: `${result.address.house_number ?? ""} ${result.address.road ?? ""}, ${result.address.city ?? ""}`.trim(),
-    lat: result.lat,
-    lon: result.lon,
-  }));
+  const results = data.map((result) => {
+    const addressParts = [
+      result.address.house_number,
+      result.address.road,
+      result.address.suburb,
+      result.address.city || result.address.town || result.address.village,
+      result.address.postcode,
+      result.address.country,
+    ].filter(Boolean); // Remove undefined/null parts
+
+    return {
+      label: addressParts.join(", "),
+      lat: result.lat,
+      lon: result.lon,
+    };
+  });
+
+  // Only keep results with decent label length
+  const filtered = results.filter((r) => r.label && r.label.length > 10);
+
+  // Remove duplicates by label
+  const unique = Array.from(new Map(filtered.map((r) => [r.label, r])).values());
+
+  return unique;
 }
 
 export function formatDuration(minutes: number | null): string {
