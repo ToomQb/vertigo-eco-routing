@@ -139,7 +139,6 @@ const MapComponent: React.FC = () => {
       setEndCoords(result.endCoords);
     } catch (error) {
       console.error(error);
-      alert("Erreur lors du calcul de l'itinéraire.");
     } finally {
       setIsLoading(false);
     }

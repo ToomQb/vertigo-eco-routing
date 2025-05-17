@@ -69,7 +69,7 @@ const SignInPage = () => {
         </form>
 
         <div className="mt-6 text-center">
-          <span className="text-sm text-gray-600 dark:text-white">Don't have an account? </span>
+          <span className="text-sm text-gray-600 dark:text-white">Don&apos;t have an account? </span>
           <Link href="/signup" className="text-sm font-medium text-dark-green dark:text-white hover:underline">
             Sign Up
           </Link>

@@ -12,12 +12,15 @@ variables:
   SONAR_PROJECT_KEY: "co2_project"
 
 before_script:
+  # Configuration de SSH
   - mkdir -p ~/.ssh
   - echo "$SSH_KEY" > ~/.ssh/id_rsa
   - chmod 600 ~/.ssh/id_rsa
   - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
 
+# Étape de test (uniquement pour la branche main)
 
+#test
 test:
   stage: test
   script:
@@ -61,10 +64,9 @@ deploy-back:
   script:
     - echo "Déploiement du backend sur la VM"
     - chmod 600 ~/.ssh/id_rsa
-    # Copier uniquement le dossier "back"
-    - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:/opt/express/
+    - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:~/back
     - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
-        cd /opt/express/back &&
+        cd ~/back &&
         npm install &&
         pm2 restart $APP_NAME || pm2 start server.js --name $APP_NAME &&
         pm2 save &&
@@ -79,12 +81,17 @@ deploy-front:
   script:
     - echo "Déploiement du frontend sur la VM"
     - chmod 600 ~/.ssh/id_rsa
-    # Copier les fichiers du dossier "end"
-    - scp -i ~/.ssh/id_rsa -r end/* gitlabci@192.168.75.79:/usr/share/nginx/html/
+    - scp -i ~/.ssh/id_rsa -r front/* gitlabci@192.168.75.79:~/front/
+    - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
+        cd ~/front &&
+        npm install &&
+        pm2 restart front || pm2 start npm --name front -- run dev &&
+        pm2 save &&
+        pm2 status"
   only:
     - main
     - Front
 
   environment:
     name: production
-    url: http://192.168.75.79
+    url: http://192.168.75.79:3000
