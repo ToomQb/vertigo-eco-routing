@@ -28,7 +28,7 @@ export default function Home() {
           ${loaded ? "translate-y-0" : "translate-y-6"}`}
       >
         <h1 className="text-2xl font-medium text-dark-green dark:text-white text-center">
-          Don&apos;t forget your password please
+          Don&apos;t ask for support please
         </h1>
       </div>
     </main>

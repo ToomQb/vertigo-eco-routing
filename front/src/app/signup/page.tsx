@@ -1,29 +1,56 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { FaUserPlus } from 'react-icons/fa';
+import { FaUserPlus } from "react-icons/fa";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    // Animate on mount
+    const timer = setTimeout(() => setLoaded(true), 50);
+
+    // Disable scroll while on this page
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      clearTimeout(timer);
+      // Restore scrolling on unmount
+      document.body.style.overflow = "";
+    };
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // logique d'inscription
+    // signup logic here
   };
 
   return (
     <div className="bg-light dark:bg-dark-green min-h-screen flex justify-center items-center">
-    <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg dark:bg-dark-green -mt-12">
-      <h2 className="text-2xl font-medium text-dark-green dark:text-white mb-6 text-center">
+      <div
+        className={`w-full max-w-md p-8 bg-white rounded-lg shadow-lg dark:bg-dark-green -mt-24
+          transition-opacity duration-[1200ms] ease-in-out
+          ${loaded ? "opacity-100" : "opacity-0"}`}
+      >
+        <h2
+          className={`text-2xl font-medium text-dark-green dark:text-white mb-6 text-center
+          transition-transform duration-[1200ms] ease-in-out delay-[0ms]
+          ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+        >
           Sign Up
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div
+            className={`transition-transform duration-[1200ms] ease-in-out delay-[200ms]
+              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+          >
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-white">
               Email
             </label>
@@ -38,7 +65,10 @@ const SignUpPage = () => {
             />
           </div>
 
-          <div>
+          <div
+            className={`transition-transform duration-[1200ms] ease-in-out delay-[400ms]
+              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+          >
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-white">
               Password
             </label>
@@ -53,7 +83,10 @@ const SignUpPage = () => {
             />
           </div>
 
-          <div>
+          <div
+            className={`transition-transform duration-[1200ms] ease-in-out delay-[600ms]
+              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+          >
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-white">
               Confirm Password
             </label>
@@ -68,13 +101,21 @@ const SignUpPage = () => {
             />
           </div>
 
-          <Button type="submit" className="w-full mt-6 flex justify-center items-center gap-2 cursor-pointer bg-dark-green">
+          <Button
+            type="submit"
+            className={`w-full mt-6 flex justify-center items-center gap-2 cursor-pointer bg-dark-green
+              transition-transform duration-[1200ms] ease-in-out delay-[800ms]
+              ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+          >
             <FaUserPlus />
             Sign Up
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div
+          className={`mt-6 text-center transition-transform duration-[1200ms] ease-in-out delay-[1000ms]
+            ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+        >
           <span className="text-sm text-gray-600 dark:text-white">Already have an account? </span>
           <Link href="/login" className="text-sm font-medium text-dark-green dark:text-white hover:underline">
             Sign In

@@ -46,7 +46,7 @@
 
 :root {
   --radius: 0.625rem;
-  --light-green: #e0f3d2;
+  --green: #6a994e;
   --dark-green: #3b6b37;
   --light: #fafafa;
   --beige: #f2e8cf;
@@ -86,8 +86,8 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
   
-.bg-green { background-color: var(--light-green); }
-.text-green { color: var(--light-green); }
+.bg-green { background-color: var(--green); }
+.text-green { color: var(--green); }
 
 .bg-dark-green { background-color: var(--dark-green); }
 .text-dark-green { color: var(--dark-green); }

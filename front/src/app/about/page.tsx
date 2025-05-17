@@ -1,10 +1,22 @@
 "use client";
 
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 const About = () => {
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoaded(true), 20); // délai réduit
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
-    <main className="about-page bg-green dark:bg-dark-green min-h-screen flex justify-center items-start px-6 pt-14 pb-14">
+    <main
+      className={`about-page bg-light dark:bg-dark-green min-h-screen flex justify-center items-start px-6 pt-14 pb-14 transition-opacity duration-700 ${
+        loaded ? "opacity-100" : "opacity-0"
+      }`}
+    >
       <div className="w-full max-w-[90rem] p-24 bg-white dark:bg-dark-card shadow-lg rounded-lg dark:text-white">
 
         {/* Main Illustration */}
@@ -15,7 +27,11 @@ const About = () => {
         />
 
         {/* Introduction */}
-        <section className="mb-16">
+        <section
+          className={`mb-16 transition-transform duration-700 ease-in-out delay-0 ${
+            loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+        >
           <h1 className="text-4xl font-extrabold text-dark-green dark:text-green-300 mb-6">
             About the Application
           </h1>
@@ -26,7 +42,11 @@ const About = () => {
         </section>
 
         {/* Mission */}
-        <section className="mb-16 grid md:grid-cols-2 gap-10 items-center">
+        <section
+          className={`mb-16 grid md:grid-cols-2 gap-10 items-center transition-transform duration-700 ease-in-out delay-200 ${
+            loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+        >
           <div>
             <h2 className="text-3xl font-semibold text-dark-green dark:text-green-300 mb-5">
               Our Mission
@@ -46,7 +66,11 @@ const About = () => {
         </section>
 
         {/* Technology and Features */}
-        <section className="mb-16">
+        <section
+          className={`mb-16 transition-transform duration-700 ease-in-out delay-400 ${
+            loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+        >
           <h2 className="text-3xl font-semibold text-dark-green dark:text-green-300 mb-6">
             Technology and Features
           </h2>
@@ -62,7 +86,11 @@ const About = () => {
         </section>
 
         {/* Project Origin */}
-        <section className="mb-16 grid md:grid-cols-2 gap-10 items-center">
+        <section
+          className={`mb-16 grid md:grid-cols-2 gap-10 items-center transition-transform duration-700 ease-in-out delay-600 ${
+            loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+        >
           <img
             src="..." // à remplacer
             alt="Environmental background"
@@ -82,7 +110,11 @@ const About = () => {
         </section>
 
         {/* Call to Action */}
-        <section className="mb-8 text-center">
+        <section
+          className={`mb-8 text-center transition-transform duration-700 ease-in-out delay-800 ${
+            loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"
+          }`}
+        >
           <h2 className="text-3xl font-semibold text-dark-green dark:text-green-300 mb-4">
             Join Us in Our Mission
           </h2>
@@ -96,7 +128,6 @@ const About = () => {
             </button>
           </Link>
         </section>
-
       </div>
     </main>
   );

@@ -42,6 +42,9 @@ const MapComponent: React.FC = () => {
   const [totalDuration, setTotalDuration] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState<TransportMode>("foot-walking");
+  const [panelVisible, setPanelVisible] = useState(false);
+  const [routeInfoVisible, setRouteInfoVisible] = useState(false);
+  const [contextMenuAnimating, setContextMenuAnimating] = useState(false);
 
   // Map reference
   const mapRef = useRef<L.Map | null>(null);
@@ -53,6 +56,11 @@ const MapComponent: React.FC = () => {
     position: { x: 0, y: 0 },
   });
   const [clickedAddress, setClickedAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Fade in panel on mount
+    setPanelVisible(true);
+  }, []);
 
   // Initialize addresses from coordinates
   useEffect(() => {
@@ -121,6 +129,7 @@ const MapComponent: React.FC = () => {
       } else {
         setEnd(address);
       }
+      hideContextMenu();
     } catch (error) {
       console.error("Reverse geocoding failed:", error);
     }
@@ -177,22 +186,34 @@ const MapComponent: React.FC = () => {
         y: e.originalEvent.clientY - rect.top,
       },
     });
+    setContextMenuAnimating(true);
   };
   
   // Hide context menu on map click
   const hideContextMenu = () => {
-    setContextMenu((prev) => ({ ...prev, visible: false }));
+    if (contextMenu.visible) {
+      setContextMenuAnimating(false);
+      setTimeout(() => {
+        setContextMenu({ ...contextMenu, visible: false });
+      }, 200); // match CSS transition duration
+    }
   };
 
   return (
     <div className="relative w-full z-1">
       {/* UI Panel */}
-      <div className="absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[350px] z-[1000]">
-        <h2 className="text-lg font-semibold mb-2 text-gray-800 dark:text-white">
+      <div className={`absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[350px] z-[1000] 
+                      transition-opacity duration-[1200ms] ease-in-out
+                      ${panelVisible ? "opacity-100" : "opacity-0"}`}>
+        <h2 className={`text-lg font-semibold mb-2 text-gray-800 dark:text-white 
+                        transition-transform duration-[1200ms] ease-in-out delay-[0ms]
+                        ${panelVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}>
           Plan your route
         </h2>
         
-        <div className="relative flex flex-col gap-1.5">
+        <div className={`relative flex flex-col gap-1.5 
+                        transition-transform duration-[1200ms] ease-in-out delay-[200ms]
+                        ${panelVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6"}`}>
           {/* Starting point input */}
           <InputField
             label="Starting point (lat, long)"
@@ -213,7 +234,9 @@ const MapComponent: React.FC = () => {
         </div>
 
         {/* Transport options */}
-        <div id="transport-options" className="flex mt-4 mb-2">
+        <div id="transport-options" className={`flex mt-4 mb-2 
+                                                transition-transform duration-[1200ms] ease-in-out delay-[0ms]
+                                                ${panelVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}`}>
           <TransportOptions onChange={(value: string) => setSelectedMode(value as TransportMode)} selectedMode={selectedMode} />
         </div>
         
@@ -222,9 +245,9 @@ const MapComponent: React.FC = () => {
           onClick={fetchRoute}
           disabled={isLoading}
           className={`w-full mt-3 py-2 rounded-lg text-white transition
-            ${isLoading 
-              ? 'bg-green opacity-70 cursor-not-allowed' 
-              : 'bg-dark-green hover:bg-green cursor-pointer'}`}
+                      transition-transform duration-[1200ms] ease-in-out delay-[0ms]
+                      ${panelVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"}
+                      ${isLoading ? 'bg-green opacity-70 cursor-not-allowed' : 'bg-dark-green hover:bg-green cursor-pointer'}`}
         >
           {isLoading ? (
             <div className="flex items-center justify-center gap-2">
