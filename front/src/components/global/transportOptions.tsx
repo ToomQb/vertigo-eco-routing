@@ -26,7 +26,7 @@ const TransportOptions: React.FC<TransportOptionsProps> = ({ selectedMode, onCha
         <RadioGroup.Item
           key={value}
           value={value}
-          className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)] cursor-pointer"
+          className="ring-[1px] ring-border rounded py-1 px-3 data-[state=checked]:ring-2 data-[state=checked]:ring-[var(--dark-green)] cursor-pointer flex justify-center items-center"
         >
           <span className="tracking-tight">{icon}</span>
         </RadioGroup.Item>

@@ -14,7 +14,7 @@ export default function About() {
         <section className="mb-16">
           <h2 className="text-3xl font-semibold text-dark-green dark:text-green-300 mb-4">Our Mission</h2>
           <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed">
-            The main goal of this application is to raise public awareness about the carbon footprint of daily travel. By allowing users to compare CO2 emissions from different modes of transport, our platform encourages more responsible and eco-friendly choices. Whether it's local, national, or international travel, our aim is to provide users with the tools they need to reduce their environmental impact.
+            The main goal of this application is to raise public awareness about the carbon footprint of daily travel. By allowing users to compare CO2 emissions from different modes of transport, our platform encourages more responsible and eco-friendly choices. Whether it is local, national, or international travel, our aim is to provide users with the tools they need to reduce their environmental impact.
           </p>
         </section>
 
