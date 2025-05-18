@@ -3,6 +3,9 @@ from app.config.security import ORS_API_KEY
 from app.schemas.types import RouteRequest
 import openrouteservice # sous licence Apache 2.0
 
+from typing import  Literal
+from app.crud.emission import EmissionCRUD
+
 router = APIRouter()
 
 client = openrouteservice.Client(key=ORS_API_KEY)
@@ -41,4 +44,16 @@ def calculate_route(request: RouteRequest):
     
     except openrouteservice.exceptions.ApiError as e:
         raise HTTPException(status_code=500, detail=f"OpenRouteService Error : {str(e)}")
+    
+@router.get("/emission_co2/{transport_mode}")
+def get_emission_co2(transport_mode : Literal[
+        "driving-car", "driving-hgv", "cycling-regular", 
+        "cycling-road", "cycling-mountain", "cycling-electric", 
+        "foot-walking", "foot-hiking", "wheelchair"
+    ]) -> float:
+    result = EmissionCRUD().get_emission_co2(transport_mode)
+    if result is not None:
+        return result
+    
+    raise HTTPException(status_code=404, detail="Transport not found")
     

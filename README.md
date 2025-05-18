@@ -41,6 +41,7 @@
 ```
 .
 ├── back
+│   ├── alembic               # Migrations
 │   ├── app
 │   │   ├── main.py           # FastAPI entry point
 │   │   ├── routers           # API routes
@@ -49,8 +50,7 @@
 │   │   ├── crud              # CRUD operations
 │   │   ├── schemas           # Pydantic schemas
 │   │   ├── services          # Utility functions
-│   │   ├── external_services # Emails, notifications
-│   │   └── alembic           # Migrations
+│   │   └──  external_services # Emails, notifications
 │   ├── tests                 # Backend tests
 │   └── requirements.txt      # Python dependencies
 ├── front
