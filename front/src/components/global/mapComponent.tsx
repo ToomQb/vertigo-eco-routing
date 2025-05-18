@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { MapContainer, TileLayer, LayersControl, Marker, Popup, Polyline } from "react-leaflet";
 import L, { LatLngExpression, LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -89,13 +89,6 @@ const MapComponent: React.FC = () => {
     return () => document.removeEventListener("contextmenu", handler);
   }, [contextMenu.visible]);
 
-  // Find route when addresses or selectedMode change
-  useEffect(() => {
-    if (start.trim() !== "" && end.trim() !== "") {
-      fetchRoute();
-    }
-  }, [start, end, selectedMode]);
-
   // Update coordinates and address
   const setMarkerPositionAndAddress = async (latLng: L.LatLng, isStart: boolean) => {
     const coords: LatLngTuple = [latLng.lat, latLng.lng];
@@ -122,8 +115,7 @@ const MapComponent: React.FC = () => {
     }
   };
   
-  // Find route based on inputs
-  const fetchRoute = async () => {
+  const fetchRoute = useCallback(async () => {
     setIsLoading(true);
     try {
       const result = await findRoute(start, end, selectedMode);
@@ -138,7 +130,14 @@ const MapComponent: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [start, end, selectedMode]);
+
+  // Find route when addresses or selectedMode change
+  useEffect(() => {
+    if (start.trim() !== "" && end.trim() !== "") {
+      fetchRoute();
+    }
+  }, [start, end, selectedMode, fetchRoute]);
 
   // Handle address selection from suggestions
   const handleAddressSelection = async (label: string, isStart: boolean) => {

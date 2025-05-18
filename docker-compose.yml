@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - "./data:/var/lib/postgresql/data"
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./front/out:/usr/share/nginx/html:ro
+    ports:
+      - "${NGINX_PORT}:80"

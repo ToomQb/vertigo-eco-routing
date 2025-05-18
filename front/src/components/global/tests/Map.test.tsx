@@ -6,7 +6,10 @@ vi.mock('next/dynamic', async () => {
   const React = await import('react');
 
   return {
-    default: (_importFn: any, _options: any) => {
+    default: (_importFn: unknown, _options: unknown) => {
+      void  _importFn;
+      void  _options;
+
       const MockedComponent = () => <div data-testid="mocked-map">Mocked Map</div>;
       return MockedComponent;
     },

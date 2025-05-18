@@ -3,7 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import auth_routes, user_routes, route_routes
 
-app = FastAPI()
+from app.config.debug import debug
+
+app = FastAPI(debug=debug)
 
 # Configure CORS
 app.add_middleware(
