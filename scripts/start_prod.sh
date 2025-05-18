@@ -37,7 +37,7 @@ fi;
 set -a
 . .env
 set +a
-envsubst '$NGINX_PORT $BACKEND_HOST $BACKEND_PORT' < nginx/default.conf.template > nginx/default.conf
+envsubst '$BACKEND_HOST $BACKEND_PORT' < nginx/default.conf.template > nginx/default.conf
 
 # create db on first run
 if ! test -d data; then
