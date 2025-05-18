@@ -13,4 +13,4 @@ def create_user(user: UserRegister):
 async def read_users_me(
     current_user: Annotated[UserInDB, Depends(UserService.get_current_user)],
 ):
-    return User(**current_user.dict(exclude={"hashed_password"}))
+    return User(**current_user.model_dump(exclude={"hashed_password"}))

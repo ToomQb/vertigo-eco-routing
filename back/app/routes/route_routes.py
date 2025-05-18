@@ -43,7 +43,7 @@ def calculate_route(request: RouteRequest):
         return route
     
     except openrouteservice.exceptions.ApiError as e:
-        raise HTTPException(status_code=500, detail=f"OpenRouteService Error : {str(e)}")
+        raise HTTPException(status_code=e.status, detail=f"OpenRouteService Error : {str(e)}")
     
 @router.get("/emission_co2/{transport_mode}")
 def get_emission_co2(transport_mode : Literal[
