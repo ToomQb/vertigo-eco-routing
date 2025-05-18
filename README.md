@@ -84,7 +84,7 @@ To generate a SECRET_KEY for JWT auth, you can use the command:
 openssl rand -hex 32
 ```
 
-You can set `DEBUG` to `1` in it to enable debug mode in SQLAlchemy and force sourcemaps to be generated on frontend builds
+You can set `DEBUG` to `1` in it to enable debug mode in FastAPI and force sourcemaps to be generated on frontend builds
 
 
 ## Quick start
