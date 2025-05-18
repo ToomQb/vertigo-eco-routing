@@ -10,7 +10,7 @@ export NEXT_PUBLIC_DEBUG="$DEBUG"
 
 # export next specifics env vars
 if test $PROD; then 
-    export NEXT_PUBLIC_API_URL="http://$BACKEND_HOST:$BACKEND_PORT"
+    export NEXT_PUBLIC_API_URL="https://$NGINX_HOST/api"
 else
-    export NEXT_PUBLIC_API_URL="https://$NGINX_HOST:$NGINX_PORT"
+    export NEXT_PUBLIC_API_URL="http://$BACKEND_HOST:$BACKEND_PORT"
 fi;

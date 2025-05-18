@@ -24,6 +24,21 @@ cd ../
 export PROD=1
 cd front && npm run build && cd ..
 
+# create nginx certs on first run
+if ! test -d nginx/certs; then
+    mkdir -p nginx/certs
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+    -keyout nginx/certs/selfsigned.key \
+    -out nginx/certs/selfsigned.crt \
+    -subj "/CN=${NGINX_HOST}"
+fi;
+
+# generate nginx config
+set -a
+. .env
+set +a
+envsubst '$NGINX_PORT $BACKEND_HOST $BACKEND_PORT' < nginx/default.conf.template > nginx/default.conf
+
 # create db on first run
 if ! test -d data; then
     ./scripts/db_reset.sh

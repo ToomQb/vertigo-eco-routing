@@ -3,9 +3,11 @@ venv/
 .env
 __pycache__/
 data
-
+nginx/certs
+nginx/default.conf
 
 # ide
 .vscode
 .swp
 .idea
+
