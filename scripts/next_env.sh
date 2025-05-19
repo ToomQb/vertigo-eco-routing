@@ -9,7 +9,7 @@ source .env
 export NEXT_PUBLIC_DEBUG="$DEBUG"
 
 # export next specifics env vars
-if test $PROD; then 
+if test $WNGINX; then 
     export NEXT_PUBLIC_API_URL="https://$NGINX_HOST/api"
 else
     export NEXT_PUBLIC_API_URL="http://$BACKEND_HOST:$BACKEND_PORT"

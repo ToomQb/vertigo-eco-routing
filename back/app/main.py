@@ -3,14 +3,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routes import auth_routes, user_routes, route_routes
 
-from app.config.debug import debug
+from app.config.common import debug, behind_nginx, nginx_host
+
 
 app = FastAPI(debug=debug)
+
+allow_origins = []
+if behind_nginx:
+    allow_origins.append(f"https://{nginx_host}")
+else:
+    allow_origins.append(f"http://localhost:3000")
+
 
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend
+    allow_origins=allow_origins,  # Frontend | TODO: use ones from .env
     allow_credentials=True,
     allow_methods=["*"],  # Enables all HTTP methods
     allow_headers=["*"],  # Allows all headers

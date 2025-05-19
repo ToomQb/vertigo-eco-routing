@@ -20,7 +20,7 @@
 - FastAPI
 - PostgreSQL
 - Alembic
-- Docker (for database)
+- Docker (for database & nginx)
 
 ### Frontend
 - Node.js v20.19.2

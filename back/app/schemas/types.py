@@ -7,12 +7,9 @@ class Token(BaseModel):
     token_type: str
 
 class TokenData(BaseModel):
-    username: str
-
-
+    email: str
 
 class User(BaseModel):
-    username: str
     email: Optional[str] = None
     full_name: Optional[str] = None
 
@@ -22,7 +19,9 @@ class UserInDB(User):
 class UserRegister(User):
     password: str
     
-    
+class SignInRequest(BaseModel):
+    email: Optional[str] = None
+    password: Optional[str] = None
     
 class RouteRequest(BaseModel):
     start: tuple[float, float]  # (longitude, latitude)

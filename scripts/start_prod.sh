@@ -21,7 +21,7 @@ npm install
 cd ../
 
 # build frontend
-export PROD=1
+export WNGINX=1
 cd front && npm run build && cd ..
 
 # create nginx certs on first run

@@ -13,6 +13,44 @@ const SignUpPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (password != confirmPassword) {
+      alert("Password and password confirmation dont match!");
+      return ;
+    }
+    if (password.length < 6) {
+      alert("Password shall be at leat 6 character long!");
+      return ;
+    }
+    (async () => {
+        const user = {
+          username: email.split("@")[0],
+          password: password,
+          email: email,
+          full_name: email
+        };
+
+      
+        const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(user)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            if (error.detail)
+              alert(error.detail)
+            console.error("Signup failed:", error);
+        } else {
+            const data = await response.json();
+            console.log("User created:", data);
+            alert("User created!")
+        }
+    
+    })()
+
     // logique d'inscription
   };
 

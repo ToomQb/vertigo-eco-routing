@@ -6,9 +6,9 @@ PARENT_DIR="$(dirname "$SCRIPT_DIR")"
 cd "$PARENT_DIR" || exit 1
 
 # delete database and restart pg
-docker compose down postgres
-rm -rf data
-docker compose -d up postgres
+docker-compose stop postgres
+sudo rm -rf data
+docker-compose up -d postgres
 
 # recreate database stuffs
 source venv/bin/activate

@@ -12,6 +12,29 @@ const SignInPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    
+    (async () => {
+      console.log("username", email, "password", password)
+      const response = await fetch(process.env.NEXT_PUBLIC_API_URL + "/auth/login", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json"
+          },
+          body: JSON.stringify({email: email, password: password}),
+          credentials: "include"
+      });
+
+      if (!response.ok) {
+          const error = await response.json();
+          if (error.detail)
+            alert(error.detail)
+          console.error("Login failed:", error);
+      } else {
+          const data = await response.json();
+          alert("Login success!")
+      }
+    })();
     // logique de connexion
   };
 
