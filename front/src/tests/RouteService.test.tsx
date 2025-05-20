@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { findRoute, ExtendedRouteResult } from "../components/global/routeService";
+import { findRoute } from "../components/global/routeService";
 import * as utils from "../components/global/utils";
 
 // Mock global fetch
@@ -142,7 +142,7 @@ describe("findRoute", () => {
     ["cycling-regular", 30, "kcal"],
     ["wheelchair", 25, "kcal"],
     ["foot-walking", 1312, "steps"],
-  ])("calculates energy for mode %s", async (mode, factor, unit) => {
+  ])("calculates energy for mode %s", async (mode) => {
     vi.spyOn(utils, "parseCoords").mockReturnValue([45, 4]);
     vi.spyOn(utils, "geocodeAddress").mockResolvedValue(null);
 
