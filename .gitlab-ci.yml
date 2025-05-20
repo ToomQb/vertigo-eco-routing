@@ -1,9 +1,10 @@
-image: node:latest
+image: ubuntu:latest
 
 stages:
+  - sonarqube-check
+  - sonarqube-vulnerability-report
   - test
   - build
-  - sonar
   - deploy
 
 variables:
@@ -48,15 +49,38 @@ build:
     - Back
 
 # Analyse SonarQube (uniquement pour main)
-sonar:
-  stage: sonar
-  image: sonarsource/sonar-scanner-cli:latest
+sonarqube-check:
+  stage: sonarqube-check
+  image: 
+    name: sonarsource/sonar-scanner-cli:5.0
+    entrypoint: [""]
   variables:
-    SONAR_LOGIN: $SONAR_TOKEN
-  script:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
     - sonar-scanner
+  allow_failure: true
   only:
     - master
+
+sonarqube-vulnerability-report:
+  stage: sonarqube-vulnerability-report
+  script:
+    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=mif10-grp11-25_projet-transversal-de-master-informatique-2024-2025_AZbueo9lRe7mU3_qr6wl&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+  allow_failure: true
+  only:
+    - master
+  artifacts:
+    expire_in: 1 day
+    reports:
+      sast: gl-sast-sonar-report.json
+  dependencies:
+    - sonarqube-check
+
 
 # Déploiement du back (main + Back)
 deploy-back:
