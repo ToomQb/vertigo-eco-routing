@@ -3,50 +3,49 @@ image: ubuntu:latest
 stages:
   - sonarqube-check
   - sonarqube-vulnerability-report
-  - test
-  - build
-  - deploy
+  # - test
+  # - build
+  # - deploy
 
-variables:
-  APP_NAME: projet_co2
-  SONAR_HOST_URL: "https://sonar.info.univ-lyon1.fr/"
-  SONAR_PROJECT_KEY: "co2_project"
+# variables:
+#   APP_NAME: projet_co2
+#   SONAR_HOST_URL: "https://sonar.info.univ-lyon1.fr/"
+#   SONAR_PROJECT_KEY: "co2_project"
 
-before_script:
-  # Configuration de SSH
-  - mkdir -p ~/.ssh
-  - echo "$SSH_KEY" > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
+#before_script:
+#  # Configuration de SSH
+#  - mkdir -p ~/.ssh
+#  - echo "$SSH_KEY" > ~/.ssh/id_rsa
+#  - chmod 600 ~/.ssh/id_rsa
+#  - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
 
-# Étape de test (uniquement pour la branche main)
 
-#test
-test:
-  stage: test
-  script:
-    - cd back
-    - npm install
-    # - npm test
-  only:
-    - master
-  allow_failure: true
+# # Étape de test (uniquement pour la branche main)
 
-# Étape de build (installation des dépendances)
-build:
-  stage: build
-  script:
-    - cd back
-    - npm install
-    - echo "Vérification du projet backend..."
-  artifacts:
-    paths:
-      - back/package.json
-      - back/package-lock.json
-    expire_in: 1 day
-  only:
-    - master
-    - Back
+# #test
+# test:
+#   stage: test
+#   script:
+#     - ./scripts/reset_db.sh
+#   only:
+#     - master
+#   allow_failure: true
+
+# # Étape de build (installation des dépendances)
+# build:
+#   stage: build
+#   script:
+#     - cd back
+#     - npm install
+#     - echo "Vérification du projet backend..."
+#   artifacts:
+#     paths:
+#       - back/package.json
+#       - back/package-lock.json
+#     expire_in: 1 day
+#   only:
+#     - master
+#     - Back
 
 # Analyse SonarQube (uniquement pour main)
 sonarqube-check:
@@ -83,39 +82,39 @@ sonarqube-vulnerability-report:
 
 
 # Déploiement du back (main + Back)
-deploy-back:
-  stage: deploy
-  script:
-    - echo "Déploiement du backend sur la VM"
-    - chmod 600 ~/.ssh/id_rsa
-    - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:~/back
-    - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
-        cd ~/back &&
-        npm install &&
-        pm2 restart $APP_NAME || pm2 start server.js --name $APP_NAME &&
-        pm2 save &&
-        pm2 status"
-  only:
-    - master
-    - Back
+# deploy-back:
+#   stage: deploy
+#   script:
+#     - echo "Déploiement du backend sur la VM"
+#     - chmod 600 ~/.ssh/id_rsa
+#     - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:~/back
+#     - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
+#         cd ~/back &&
+#         npm install &&
+#         pm2 restart $APP_NAME || pm2 start server.js --name $APP_NAME &&
+#         pm2 save &&
+#         pm2 status"
+#   only:
+#     - master
+#     - Back
 
-# Déploiement du front (main + Front)
-deploy-front:
-  stage: deploy
-  script:
-    - echo "Déploiement du frontend sur la VM"
-    - chmod 600 ~/.ssh/id_rsa
-    - scp -i ~/.ssh/id_rsa -r front/* gitlabci@192.168.75.79:~/front/
-    - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
-        cd ~/front &&
-        npm install &&
-        pm2 restart front || pm2 start npm --name front -- run dev &&
-        pm2 save &&
-        pm2 status"
-  only:
-    - master
-    - Front
+# # Déploiement du front (main + Front)
+# deploy-front:
+#   stage: deploy
+#   script:
+#     - echo "Déploiement du frontend sur la VM"
+#     - chmod 600 ~/.ssh/id_rsa
+#     - scp -i ~/.ssh/id_rsa -r front/* gitlabci@192.168.75.79:~/front/
+#     - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
+#         cd ~/front &&
+#         npm install &&
+#         pm2 restart front || pm2 start npm --name front -- run dev &&
+#         pm2 save &&
+#         pm2 status"
+#   only:
+#     - master
+#     - Front
 
-  environment:
-    name: production
-    url: http://192.168.75.79:3000
+#   environment:
+#     name: production
+#     url: http://192.168.75.79:3000
