@@ -12,13 +12,8 @@ uvicorn_logger = logging.getLogger("uvicorn")
 
 router = APIRouter()
 
-@router.get("/me/", status_code=200)
-async def read_users_me(request: Request):
-    token = request.cookies.get("access_token")
-    data = SecurityService.decode_access_token(token)
-
 @router.get("/me/", response_model=User)
 async def read_users_me(
-    current_user: Annotated[UserInDB, Depends(UserService.get_current_user)],
+    current_user: Annotated[UserInDB, Depends(UserService.get_current_user_from_request)],
 ):
     return User(**current_user.model_dump(exclude={"hashed_password"}))

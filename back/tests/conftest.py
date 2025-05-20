@@ -8,8 +8,7 @@ def client():
 
 @pytest.fixture
 def test_create_user(client):
-    response = client.post("/users", json={
-        "username": "testuser",
+    response = client.post("/auth/signup", json={
         "email": "testuser@test.fr",
         "full_name": "testuser",
         "password": "testpass"

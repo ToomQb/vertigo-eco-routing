@@ -13,8 +13,8 @@ uvicorn_logger = logging.getLogger("uvicorn")
 router = APIRouter()
 
 @router.post("/signup", response_model=UserInDB, status_code=201)
-def create_user(user: UserRegister):
-    return UserService.create_user(user)
+def create_user(user: Annotated[UserInDB, Depends(UserService.create_user)]):
+    return user
 
 @router.post("/login", status_code=200)
 def login_user(request: SignInRequest, response: Response):

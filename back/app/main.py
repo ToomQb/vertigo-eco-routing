@@ -29,5 +29,5 @@ app.include_router(user_routes.router, prefix="/users", tags=["Users"])
 app.include_router(route_routes.router, prefix="/routes", tags=["Routes"])
 
 @app.get("/", status_code=200)
-def isUp():
+def is_up():
     return True;

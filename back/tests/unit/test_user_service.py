@@ -15,7 +15,7 @@ def sample_user_register():
     return UserRegister(email="test@example.com", password="password123")
 
 def generate_token(email: str):
-    return encode({"sub": email}, SECRET_KEY, algorithm=ALGORITHM)
+    return encode({"email": email}, SECRET_KEY, algorithm=ALGORITHM)
 
 # --- get_user ---
 
