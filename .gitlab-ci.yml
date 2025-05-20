@@ -1,97 +1,120 @@
-image: node:latest
+image: ubuntu:latest
 
 stages:
-  - test
-  - build
-  - sonar
-  - deploy
+  - sonarqube-check
+  - sonarqube-vulnerability-report
+  # - test
+  # - build
+  # - deploy
 
-variables:
-  APP_NAME: projet_co2
-  SONAR_HOST_URL: "https://sonar.info.univ-lyon1.fr/"
-  SONAR_PROJECT_KEY: "co2_project"
+# variables:
+#   APP_NAME: projet_co2
+#   SONAR_HOST_URL: "https://sonar.info.univ-lyon1.fr/"
+#   SONAR_PROJECT_KEY: "co2_project"
 
-before_script:
-  # Configuration de SSH
-  - mkdir -p ~/.ssh
-  - echo "$SSH_KEY" > ~/.ssh/id_rsa
-  - chmod 600 ~/.ssh/id_rsa
-  - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
+#before_script:
+#  # Configuration de SSH
+#  - mkdir -p ~/.ssh
+#  - echo "$SSH_KEY" > ~/.ssh/id_rsa
+#  - chmod 600 ~/.ssh/id_rsa
+#  - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
 
-# Étape de test (uniquement pour la branche main)
 
-#test
-test:
-  stage: test
-  script:
-    - cd back
-    - npm install
-    # - npm test
-  only:
-    - main
-  allow_failure: true
+# # Étape de test (uniquement pour la branche main)
 
-# Étape de build (installation des dépendances)
-build:
-  stage: build
-  script:
-    - cd back
-    - npm install
-    - echo "Vérification du projet backend..."
-  artifacts:
-    paths:
-      - back/package.json
-      - back/package-lock.json
-    expire_in: 1 day
-  only:
-    - main
-    - Back
+# #test
+# test:
+#   stage: test
+#   script:
+#     - ./scripts/reset_db.sh
+#   only:
+#     - master
+#   allow_failure: true
+
+# # Étape de build (installation des dépendances)
+# build:
+#   stage: build
+#   script:
+#     - cd back
+#     - npm install
+#     - echo "Vérification du projet backend..."
+#   artifacts:
+#     paths:
+#       - back/package.json
+#       - back/package-lock.json
+#     expire_in: 1 day
+#   only:
+#     - master
+#     - Back
 
 # Analyse SonarQube (uniquement pour main)
-sonar:
-  stage: sonar
-  image: sonarsource/sonar-scanner-cli:latest
+sonarqube-check:
+  stage: sonarqube-check
+  image: 
+    name: sonarsource/sonar-scanner-cli:5.0
+    entrypoint: [""]
   variables:
-    SONAR_LOGIN: $SONAR_TOKEN
-  script:
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"  # Defines the location of the analysis task cache
+    GIT_DEPTH: "0"  # Tells git to fetch all the branches of the project, required by the analysis task
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  script: 
     - sonar-scanner
+  allow_failure: true
   only:
-    - main
+    - master
+
+sonarqube-vulnerability-report:
+  stage: sonarqube-vulnerability-report
+  script:
+    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=mif10-grp11-25_projet-transversal-de-master-informatique-2024-2025_AZbueo9lRe7mU3_qr6wl&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
+  allow_failure: true
+  only:
+    - master
+  artifacts:
+    expire_in: 1 day
+    reports:
+      sast: gl-sast-sonar-report.json
+  dependencies:
+    - sonarqube-check
+
 
 # Déploiement du back (main + Back)
-deploy-back:
-  stage: deploy
-  script:
-    - echo "Déploiement du backend sur la VM"
-    - chmod 600 ~/.ssh/id_rsa
-    - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:~/back
-    - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
-        cd ~/back &&
-        npm install &&
-        pm2 restart $APP_NAME || pm2 start server.js --name $APP_NAME &&
-        pm2 save &&
-        pm2 status"
-  only:
-    - main
-    - Back
+# deploy-back:
+#   stage: deploy
+#   script:
+#     - echo "Déploiement du backend sur la VM"
+#     - chmod 600 ~/.ssh/id_rsa
+#     - scp -i ~/.ssh/id_rsa -r back gitlabci@192.168.75.79:~/back
+#     - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
+#         cd ~/back &&
+#         npm install &&
+#         pm2 restart $APP_NAME || pm2 start server.js --name $APP_NAME &&
+#         pm2 save &&
+#         pm2 status"
+#   only:
+#     - master
+#     - Back
 
-# Déploiement du front (main + Front)
-deploy-front:
-  stage: deploy
-  script:
-    - echo "Déploiement du frontend sur la VM"
-    - chmod 600 ~/.ssh/id_rsa
-    - scp -i ~/.ssh/id_rsa -r front/* gitlabci@192.168.75.79:~/front/
-    - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
-        cd ~/front &&
-        npm install &&
-        pm2 restart front || pm2 start npm --name front -- run dev &&
-        pm2 save &&
-        pm2 status"
-  only:
-    - main
-    - Front
+# # Déploiement du front (main + Front)
+# deploy-front:
+#   stage: deploy
+#   script:
+#     - echo "Déploiement du frontend sur la VM"
+#     - chmod 600 ~/.ssh/id_rsa
+#     - scp -i ~/.ssh/id_rsa -r front/* gitlabci@192.168.75.79:~/front/
+#     - ssh -i ~/.ssh/id_rsa gitlabci@192.168.75.79 "
+#         cd ~/front &&
+#         npm install &&
+#         pm2 restart front || pm2 start npm --name front -- run dev &&
+#         pm2 save &&
+#         pm2 status"
+#   only:
+#     - master
+#     - Front
 
-  environment:
-    name: production
-    url: http://192.168.75.79:3000
+#   environment:
+#     name: production
+#     url: http://192.168.75.79:3000

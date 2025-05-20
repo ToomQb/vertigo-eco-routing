@@ -102,7 +102,7 @@ const About = () => {
               Origin of the Project
             </h2>
             <p className="text-xl text-gray-700 dark:text-gray-300 leading-relaxed text-justify">
-              This project was developed within our Master's program, led by professors committed to addressing environmental challenges. 
+              This project was developed within our Master&apos;s program, led by professors committed to addressing environmental challenges. 
               Its goal is to reduce the carbon footprint of daily commutes and raise awareness about sustainable transportation choices. 
               Inspired by current environmental concerns and the growing need for eco-friendly solutions, this platform aims to make information accessible to all and encourage responsible decision-making.
             </p>

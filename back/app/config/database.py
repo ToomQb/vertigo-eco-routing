@@ -4,19 +4,19 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 from dotenv import load_dotenv
 
-# Charger les variables depuis le fichier .env
-load_dotenv()
+from pathlib import Path
 
-database_username = os.getenv("DATABASE_USERNAME", "postgres")
-database_password = os.getenv("DATABASE_PASSWORD", "mysecretpassword")
-database_ip = os.getenv("DATABASE_IP", "localhost")
-database_name = os.getenv("DATABASE_NAME", "mif10")
-database_port = int(os.getenv("DATABASE_PORT", "5432"))
+env_path = Path(__file__).resolve().parents[3] / '.env'
 
-DATABASE_URL = (
-    f"postgresql+psycopg2://{database_username}:{database_password}"
-    f"@{database_ip}:{database_port}/{database_name}"
-)
+load_dotenv(dotenv_path=env_path)
+
+database_username = os.getenv("POSTGRES_USER", "postgres")
+database_password = os.getenv("POSTGRES_PASSWORD", "mysecretpassword")
+database_ip = os.getenv("POSTGRES_HOST", "localhost")
+database_name = os.getenv("POSTGRES_DB", "mif10")
+database_port = int(os.getenv("POSTGRES_PORT", "5432"))
+
+DATABASE_URL = f"postgresql+psycopg2://{database_username}:{database_password}@{database_ip}:{database_port}/{database_name}"
 
 engine = create_engine(DATABASE_URL, pool_size=100)
 
