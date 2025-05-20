@@ -3,10 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "test": "vitest",
-    "build": "next build",
-    "start": "next start",
+    "dev": "bash -c 'source ./../scripts/next_env.sh && cd front && ./node_modules/.bin/next dev --turbopack'",
+    "test": "bash -c 'source ./../scripts/next_env.sh && cd front && ./node_modules/.bin/vitest'",
+    "build": "bash -c 'source ./../scripts/next_env.sh && cd front && ./node_modules/.bin/next build'",
     "lint": "next lint"
   },
   "dependencies": {

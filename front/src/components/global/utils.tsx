@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { LatLngTuple } from "leaflet";
 
 export const parseCoords = (input: string): LatLngTuple | null => {

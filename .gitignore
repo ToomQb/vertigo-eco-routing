@@ -1,5 +1,13 @@
+# project
 venv/
 .env
 __pycache__/
-.vscode/
-node_modules/
+data
+nginx/certs
+nginx/default.conf
+*.log
+
+# ide
+.vscode
+.swp
+.idea

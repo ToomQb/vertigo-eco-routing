@@ -20,7 +20,7 @@
 - FastAPI
 - PostgreSQL
 - Alembic
-- Docker (for database)
+- Docker (for database & nginx)
 
 ### Frontend
 - Node.js v20.19.2
@@ -69,12 +69,33 @@
 
 ## Prerequisites
 
+- POSIX system
 - Python 3.10+
 - Node.js v20.19.2 (with npm v10.8.2)
-- Docker (for PostgreSQL database)
-- OpenSSL (for generating a secret key if needed)
+- Docker (for PostgreSQL database and nginx)
+- OpenSSL (for generating a secret key for JWT auth and SSL certificates)
 
-## Installation and Configuration
+## Environment Variables
+
+Copy the `.env.demo` file into `.env` in the project root directory.
+
+To generate a SECRET_KEY for JWT auth, you can use the command:
+
+```bash
+openssl rand -hex 32
+```
+
+You can set `DEBUG` to `1` in it to enable debug mode in FastAPI and force sourcemaps to be generated on frontend builds
+
+
+## Quick start
+
+* `./scripts/start_dev` will install all dependencies and start the database, backend, and frontend (in development mode with HMR).
+
+* `./scripts/start_prod` will install all dependencies, build the React application, and then start Nginx, the database, and the backend.
+
+
+## Details for Installation and Configuration
 
 ### 1. Create and activate Python virtual environment (backend)
 ```bash
@@ -104,47 +125,11 @@ cd back && python3 -m venv venv && source venv/bin/activate && pip install -r re
 cd ../front && npm install
 ```
 
-### Environment Variables
-
-Create a `.env` file in the `back/` directory with at least:
-
-```env
-ORS_API_KEY="your_openrouteservice_key"
-SECRET_KEY="09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM="HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES=30
-
-DATABASE_USERNAME=postgres
-DATABASE_PASSWORD=mysecretpassword
-DATABASE_IP=localhost
-DATABASE_NAME=db_name
-DATABASE_PORT=5432
-```
-
-To generate a SECRET_KEY, you can use the command:
-
-```bash
-openssl rand -hex 32
-```
-
 ### Database Setup
 
-Launch PostgreSQL in a Docker container:
+Use `docker-compose up postgres` to run the DB. It will automatically create itself on first launch and will be stored in project root/`data` directory.
 
-```bash
-docker run -p 127.0.0.1:5432:5432 --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres
-```
-
-Connect to PostgreSQL and create the database:
-
-```bash
-docker exec -it some-postgres psql -U postgres
-# or
-psql -h localhost -U postgres
-
-CREATE DATABASE db_name;
-\q
-```
+You can use the `./scripts/reset_db.sh` to (re)generate the database using alembic.
 
 ## Running Applications
 

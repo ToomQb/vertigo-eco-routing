@@ -6,7 +6,6 @@ from app.config.database import Base
 
 class User(Base):
     __tablename__ = "user"
-    username = Column(String, primary_key=True)
-    hashed_password = Column(String, nullable=False)
-    email = Column(String, nullable=True)
+    email = Column(String, primary_key=True)
     full_name = Column(String, nullable=True)
+    hashed_password = Column(String, nullable=False)

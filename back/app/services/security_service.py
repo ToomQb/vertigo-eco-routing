@@ -1,18 +1,16 @@
 import jwt
-from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime, timedelta, timezone
 from app.config.security import SECRET_KEY, ALGORITHM
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class SecurityService:
     @staticmethod
     def hash_password(password: str) -> str:
-        return pwd_context.hash(password)
+        return  bcrypt.hashpw(password.encode(), bcrypt.gensalt())
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
-        return pwd_context.verify(plain_password, hashed_password)
+        return bcrypt.checkpw(plain_password.encode(), hashed_password.encode())
 
     @staticmethod
     def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
@@ -24,3 +22,13 @@ class SecurityService:
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
+
+    @staticmethod
+    def decode_access_token(token: str) -> dict:
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            return payload
+        except ExpiredSignatureError:
+            raise ValueError("Token has expired")
+        except InvalidTokenError:
+            raise ValueError("Invalid token")

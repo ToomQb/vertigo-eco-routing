@@ -48,7 +48,7 @@ export const findRoute = async (
     }
   }
 
-  const response = await fetch("http://localhost:3002/routes/calculate/", {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/routes/calculate/`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -59,6 +59,7 @@ export const findRoute = async (
   });
 
   if (!response.ok) {
+    console.log("error fetching:", `${process.env.NEXT_PUBLIC_API_URL}/routes/calculate/`)
     throw new Error("API Error");
   }
 

@@ -1,0 +1,27 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    environment:
+          - POSTGRES_USER=${POSTGRES_USER}
+          - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+          - POSTGRES_DB=${POSTGRES_DB}
+          - POSTGRES_HOST=${POSTGRES_HOST}
+          - POSTGRES_PORT=${POSTGRES_PORT}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - "./data:/var/lib/postgresql/data"
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    network_mode: "host"    # TODO: run backend in a container and share a network so we dont have to do that
+    environment:
+          - BACKEND_HOST=${BACKEND_HOST}
+          - BACKEND_PORT=${BACKEND_PORT}
+    volumes:
+      - ./front/out:/usr/share/nginx/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro

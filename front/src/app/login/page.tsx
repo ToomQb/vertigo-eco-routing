@@ -28,7 +28,31 @@ const SignInPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // login logic here
+
+    (async () => {
+      console.log("username", email, "password", password);
+      const response = await fetch(
+        process.env.NEXT_PUBLIC_API_URL + "/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: email, password: password }),
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json();
+        if (error.detail) alert(error.detail);
+        console.error("Login failed:", error);
+      } else {
+        //const data = await response.json();
+        alert("Login success!");
+      }
+    })();
+    // logique de connexion
   };
 
   return (
@@ -49,9 +73,16 @@ const SignInPage = () => {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div
             className={`transition-transform duration-[1200ms] ease-in-out delay-[200ms]
-              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+              ${
+                loaded
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-12"
+              }`}
           >
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-white">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 dark:text-white"
+            >
               Email
             </label>
             <Input
@@ -67,9 +98,16 @@ const SignInPage = () => {
 
           <div
             className={`transition-transform duration-[1200ms] ease-in-out delay-[400ms]
-              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+              ${
+                loaded
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-12"
+              }`}
           >
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-white">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 dark:text-white"
+            >
               Password
             </label>
             <div className="relative mt-2">
@@ -95,7 +133,11 @@ const SignInPage = () => {
 
           <div
             className={`flex justify-between items-center transition-transform duration-[1200ms] ease-in-out delay-[600ms]
-              ${loaded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-12"}`}
+              ${
+                loaded
+                  ? "opacity-100 translate-x-0"
+                  : "opacity-0 translate-x-12"
+              }`}
           >
             <div className="flex items-center gap-2">
               <input
@@ -103,11 +145,17 @@ const SignInPage = () => {
                 id="remember"
                 className="h-4 w-4 text-dark-green dark:text-white cursor-pointer"
               />
-              <label htmlFor="remember" className="text-sm text-gray-600 dark:text-white cursor-pointer">
+              <label
+                htmlFor="remember"
+                className="text-sm text-gray-600 dark:text-white cursor-pointer"
+              >
                 Remember me
               </label>
             </div>
-            <Link href="/forgot-password" className="text-sm text-dark-green dark:text-white hover:underline">
+            <Link
+              href="/forgot-password"
+              className="text-sm text-dark-green dark:text-white hover:underline"
+            >
               Forgot Password?
             </Link>
           </div>
@@ -116,7 +164,9 @@ const SignInPage = () => {
             type="submit"
             className={`w-full mt-6 flex justify-center items-center gap-2 cursor-pointer bg-dark-green
               transition-transform duration-[1200ms] ease-in-out delay-[800ms]
-              ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+              ${
+                loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+              }`}
           >
             <FaSignInAlt />
             Sign In
@@ -125,10 +175,17 @@ const SignInPage = () => {
 
         <div
           className={`mt-6 text-center transition-transform duration-[1200ms] ease-in-out delay-[1000ms]
-            ${loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"}`}
+            ${
+              loaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+            }`}
         >
-          <span className="text-sm text-gray-600 dark:text-white">Don't have an account? </span>
-          <Link href="/signup" className="text-sm font-medium text-dark-green dark:text-white hover:underline">
+          <span className="text-sm text-gray-600 dark:text-white">
+            Don't have an account?{" "}
+          </span>
+          <Link
+            href="/signup"
+            className="text-sm font-medium text-dark-green dark:text-white hover:underline"
+          >
             Sign Up
           </Link>
         </div>
