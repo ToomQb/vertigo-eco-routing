@@ -5,7 +5,7 @@ import { formatDuration } from "./utils";
 interface RouteInfoProps {
   totalDistance: string | null;
   totalDuration: number | null;
-  co2Emission?: string;
+  co2Emission?: string | null;
   energy?: string;
   selectedMode: string;
 }

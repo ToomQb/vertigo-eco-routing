@@ -40,10 +40,10 @@ const MapComponent: React.FC = () => {
   const [routePoints, setRoutePoints] = useState<LatLngTuple[]>([]);
   const [totalDistance, setTotalDistance] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<number | null>(null);
+  const [co2Emission, setCo2Emission] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState<TransportMode>("foot-walking");
   const [panelVisible, setPanelVisible] = useState(false);
-  const [routeInfoVisible, setRouteInfoVisible] = useState(false);
   const [contextMenuAnimating, setContextMenuAnimating] = useState(false);
 
   // Map reference
@@ -144,6 +144,7 @@ const MapComponent: React.FC = () => {
       setRoutePoints(result.routePoints);
       setTotalDistance(result.totalDistanceKm);
       setTotalDuration(result.totalDurationMin);
+      setCo2Emission(result.co2Emission);
       setStartCoords(result.startCoords);
       setEndCoords(result.endCoords);
     } catch (error) {
@@ -263,7 +264,7 @@ const MapComponent: React.FC = () => {
          <RouteInfo
             totalDistance={totalDistance}
             totalDuration={totalDuration}
-            co2Emission="20.34"
+            co2Emission={co2Emission}
             energy="3420"
             selectedMode={selectedMode}
           />

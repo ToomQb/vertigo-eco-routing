@@ -62,6 +62,7 @@
 │   │   │   ├── global        # Global components (navbar, map, input, theme...)
 │   │   │   ├── ui            # shadcn/ui primitives
 │   │   ├── lib               # Libraries, helpers
+│   │   ├── tests             # Front tests
 │   ├── package.json          # Node.js dependencies, npm scripts
 │   └── tsconfig.json         # TypeScript configuration
 ```
@@ -195,7 +196,7 @@ npm run dev
 
   3. **Write tests**
 
-     - Place your test files inside `front/src` close to your components, e.g. `front/src/components/navbar.test.tsx`.
+     - Place your test files inside `front/src/tests` close to your components, e.g. `front/src/tests/navbar.test.tsx`.
 
   4. **Run tests**
 

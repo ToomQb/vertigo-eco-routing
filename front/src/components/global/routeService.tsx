@@ -14,7 +14,7 @@ export const findRoute = async (
   start: string,
   end: string,
   selectedMode: string
-): Promise<RouteResult> => {
+): Promise<RouteResult & { co2Emission: string }> => {
   let startLatLng: LatLngTuple;
   let endLatLng: LatLngTuple;
 
@@ -74,11 +74,28 @@ export const findRoute = async (
     coord[0],
   ]);
 
+  const emissionResponse = await fetch(
+    `http://localhost:3002/routes/emission_co2/${selectedMode}`,
+    {
+      method: "GET",
+      headers: { Accept: "application/json" },
+    }
+  );
+
+  let co2Emission = "N/A";
+
+  if (emissionResponse.ok) {
+    const emissionFactor: number = await emissionResponse.json();
+    const emissionKg = (parseFloat(totalDistanceKm) * (emissionFactor / 1000));
+    co2Emission = emissionKg.toFixed(2);
+  }
+
   return {
     routePoints,
     totalDistanceKm,
     totalDurationMin,
     startCoords: startLatLng,
     endCoords: endLatLng,
+    co2Emission,
   };
 };
