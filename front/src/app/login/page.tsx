@@ -31,7 +31,7 @@ const SignInPage = () => {
             alert(error.detail)
           console.error("Login failed:", error);
       } else {
-          const data = await response.json();
+          //const data = await response.json();
           alert("Login success!")
       }
     })();

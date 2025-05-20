@@ -19,11 +19,17 @@ server {
     location / {
         root /usr/share/nginx/html;
         index index.html index.htm;
-        try_files $uri $uri/ =404;
+        try_files $uri $uri/ $uri.html =404;
+    }
+
+    location /openapi.json {
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT}/openapi.json;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
 
     location /api/ {
-        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT};
+        proxy_pass http://${BACKEND_HOST}:${BACKEND_PORT}/;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
