@@ -162,7 +162,7 @@ const MapComponent: React.FC = () => {
     if (start.trim() !== "" && end.trim() !== "") {
       fetchRoute();
     }
-  }, [start, end, selectedMode, fetchRoute]);
+  }, [selectedMode]);
 
   // Handle address selection from suggestions
   const handleAddressSelection = async (label: string, isStart: boolean) => {
