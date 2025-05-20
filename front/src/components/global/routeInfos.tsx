@@ -6,7 +6,7 @@ interface RouteInfoProps {
   totalDistance: string | null;
   totalDuration: number | null;
   co2Emission?: string | null;
-  energy?: string;
+  energy?: string | null;
   selectedMode: string;
 }
 

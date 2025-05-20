@@ -41,6 +41,7 @@ const MapComponent: React.FC = () => {
   const [totalDistance, setTotalDistance] = useState<string | null>(null);
   const [totalDuration, setTotalDuration] = useState<number | null>(null);
   const [co2Emission, setCo2Emission] = useState<string | null>(null);
+  const [energy, setEnergy] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedMode, setSelectedMode] = useState<TransportMode>("foot-walking");
   const [panelVisible, setPanelVisible] = useState(false);
@@ -145,6 +146,7 @@ const MapComponent: React.FC = () => {
       setTotalDistance(result.totalDistanceKm);
       setTotalDuration(result.totalDurationMin);
       setCo2Emission(result.co2Emission);
+      setEnergy(result.energy);
       setStartCoords(result.startCoords);
       setEndCoords(result.endCoords);
     } catch (error) {
@@ -260,14 +262,19 @@ const MapComponent: React.FC = () => {
           )}
         </button>
 
-        {routePoints && routePoints.length > 1 && (
-         <RouteInfo
-            totalDistance={totalDistance}
-            totalDuration={totalDuration}
-            co2Emission={co2Emission}
-            energy="3420"
-            selectedMode={selectedMode}
-          />
+        {isLoading ? (
+          <div>
+          </div>
+        ) : (
+          routePoints && routePoints.length > 1 && (
+            <RouteInfo
+              totalDistance={totalDistance}
+              totalDuration={totalDuration}
+              co2Emission={co2Emission}
+              energy={energy}
+              selectedMode={selectedMode}
+            />
+          )
         )}
 
       </div>

@@ -10,11 +10,16 @@ export interface RouteResult {
   endCoords: LatLngTuple;
 }
 
+export interface ExtendedRouteResult extends RouteResult {
+  co2Emission: string;
+  energy: string | null;
+}
+
 export const findRoute = async (
   start: string,
   end: string,
   selectedMode: string
-): Promise<RouteResult & { co2Emission: string }> => {
+): Promise<ExtendedRouteResult> => {
   let startLatLng: LatLngTuple;
   let endLatLng: LatLngTuple;
 
@@ -90,6 +95,22 @@ export const findRoute = async (
     co2Emission = emissionKg.toFixed(2);
   }
 
+  let energy: string | null = null;
+
+  if (selectedMode === "driving-car") {
+    const fuelPerKm = 0.06; // L/km
+    energy = (parseFloat(totalDistanceKm) * fuelPerKm).toFixed(2); // L
+  } else if (selectedMode === "cycling-regular") {
+    const kcalPerKm = 30;
+    energy = (parseFloat(totalDistanceKm) * kcalPerKm).toFixed(0); // kcal
+  } else if (selectedMode === "wheelchair") {
+    const kcalPerKm = 25;
+    energy = (parseFloat(totalDistanceKm) * kcalPerKm).toFixed(0); // kcal
+  } else if (selectedMode === "foot-walking") {
+    const stepsPerKm = 1312;
+    energy = Math.round(parseFloat(totalDistanceKm) * stepsPerKm).toString(); // steps
+  }
+
   return {
     routePoints,
     totalDistanceKm,
@@ -97,5 +118,6 @@ export const findRoute = async (
     startCoords: startLatLng,
     endCoords: endLatLng,
     co2Emission,
+    energy,
   };
 };
