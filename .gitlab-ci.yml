@@ -2,17 +2,12 @@ image: ubuntu:latest
 
 stages:
   - sonarqube-check
-  - sonarqube-vulnerability-report
-  # - test
+  - test-back
   # - build
   # - deploy
 
-# variables:
-#   APP_NAME: projet_co2
-#   SONAR_HOST_URL: "https://sonar.info.univ-lyon1.fr/"
-#   SONAR_PROJECT_KEY: "co2_project"
-
-#before_script:
+before_script:
+  - apt install docker docker-compose python3 python3-venv
 #  # Configuration de SSH
 #  - mkdir -p ~/.ssh
 #  - echo "$SSH_KEY" > ~/.ssh/id_rsa
@@ -20,16 +15,18 @@ stages:
 #  - ssh-keyscan -H 192.168.75.79 >> ~/.ssh/known_hosts
 
 
-# # Étape de test (uniquement pour la branche main)
+test-back:
+  stage:
+  script:
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - cd back
+    - pip install -r requirements.txt
+    - pytest tests/unit/
 
-# #test
-# test:
-#   stage: test
-#   script:
-#     - ./scripts/reset_db.sh
-#   only:
-#     - master
-#   allow_failure: true
+  only:
+    - master
+  allow_failure: true
 
 # # Étape de build (installation des dépendances)
 # build:
@@ -65,20 +62,6 @@ sonarqube-check:
   allow_failure: true
   only:
     - master
-
-sonarqube-vulnerability-report:
-  stage: sonarqube-vulnerability-report
-  script:
-    - 'curl -u "${SONAR_TOKEN}:" "${SONAR_HOST_URL}/api/issues/gitlab_sast_export?projectKey=mif10-grp11-25_projet-transversal-de-master-informatique-2024-2025_AZbueo9lRe7mU3_qr6wl&branch=${CI_COMMIT_BRANCH}&pullRequest=${CI_MERGE_REQUEST_IID}" -o gl-sast-sonar-report.json'
-  allow_failure: true
-  only:
-    - master
-  artifacts:
-    expire_in: 1 day
-    reports:
-      sast: gl-sast-sonar-report.json
-  dependencies:
-    - sonarqube-check
 
 
 # Déploiement du back (main + Back)
