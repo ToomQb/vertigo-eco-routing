@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { FaUser, FaHeart, FaCar, FaCog, FaQuestionCircle, FaSignOutAlt, FaSignInAlt, FaUserPlus } from 'react-icons/fa'; 
+import { FaUser, FaHeart, FaCar, FaCog, FaQuestionCircle, FaSignOutAlt, FaSignInAlt, FaUserPlus } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Link from "next/link";
@@ -11,12 +11,20 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/components/global/authContext";
 
 const HeaderOnlyLayout = () => {
   const pathname = usePathname();
+  const router = useRouter();
+  const { isLoggedIn, user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push("/login");
+  };
 
   return (
     <div className="bg-light dark:bg-dark-green flex flex-col w-screen sticky top-0 z-50">
@@ -37,7 +45,7 @@ const HeaderOnlyLayout = () => {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          <AvatarButton isLoggedIn={false} />
+          <AvatarButton isLoggedIn={isLoggedIn} user={user} onLogout={handleLogout} />
         </div>
       </header>
     </div>
@@ -47,51 +55,56 @@ const HeaderOnlyLayout = () => {
 const CompanyLogoLink = () => {
   return (
     <Link href="/" className="flex items-center gap-2 px-3 h-[40px]">
-      <img
-        src="/logo.png"
-        alt="VertiGo Logo"
-        className="h-35 object-contain"
-      />
+      <img src="/logo.png" alt="VertiGo Logo" className="h-35 object-contain" />
     </Link>
   );
 };
 
 export default HeaderOnlyLayout;
 
-const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
+type AvatarButtonProps = {
+  isLoggedIn: boolean;
+  user?: { name: string; email: string } | null;
+  onLogout: () => void;
+};
+
+const AvatarButton = ({ isLoggedIn, user, onLogout }: AvatarButtonProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="secondary" size="icon" className="rounded-full p-2 hover:bg-gray-100 dark:hover:bg-dark-green cursor-pointer">
           <Avatar>
-            <AvatarFallback>
-              <FaUser size={24} />
-            </AvatarFallback>
+            {isLoggedIn ? (
+              <img
+                src="/user.jpg"
+                alt={user?.name ?? "User"}
+                className="h-full w-full object-cover rounded-full"
+              />
+            ) : (
+              <AvatarFallback>
+                <FaUser size={24} />
+              </AvatarFallback>
+            )}
           </Avatar>
           <span className="sr-only">Toggle user menu</span>
         </Button>
       </DropdownMenuTrigger>
 
-      {/* Dropdown content for logged-out user */}
-      <DropdownMenuContent 
-        align="end" 
+      <DropdownMenuContent
+        align="end"
         className="z-[9999] w-48 absolute top-full mt-2 right-0 transform translate-x-[-50%] md:translate-x-0"
       >
         {!isLoggedIn ? (
           <>
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <div className="flex justify-between items-center">
-                  Guest
-                </div>
-                <div className="text-muted-foreground text-sm font-normal">
-                  Sign in for more
-                </div>
+                <div className="flex justify-between items-center">Guest</div>
+                <div className="text-muted-foreground text-sm font-normal">Sign in for more</div>
               </div>
             </DropdownMenuLabel>
 
             <DropdownMenuSeparator />
-            <Link href="/login" >
+            <Link href="/login">
               <DropdownMenuItem className="cursor-pointer">
                 <FaSignInAlt className="mr-2" size={18} /> Login
               </DropdownMenuItem>
@@ -112,12 +125,8 @@ const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
           <>
             <DropdownMenuLabel>
               <div className="flex flex-col">
-                <div className="flex justify-between items-center">
-                  John Doe
-                </div>
-                <div className="text-muted-foreground text-sm font-normal">
-                  john.doe@gmail.com
-                </div>
+                <div className="flex justify-between items-center">{user?.name ?? "User"}</div>
+                <div className="text-muted-foreground text-sm font-normal">{user?.email ?? "user@example.com"}</div>
               </div>
             </DropdownMenuLabel>
 
@@ -145,11 +154,9 @@ const AvatarButton = ({ isLoggedIn }: { isLoggedIn: boolean }) => {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <Link href="/logout">
-              <DropdownMenuItem className="cursor-pointer">
-                <FaSignOutAlt className="mr-2" size={18} /> Logout
-              </DropdownMenuItem>
-            </Link>
+            <DropdownMenuItem className="cursor-pointer" onClick={onLogout}>
+              <FaSignOutAlt className="mr-2" size={18} /> Logout
+            </DropdownMenuItem>
           </>
         )}
       </DropdownMenuContent>

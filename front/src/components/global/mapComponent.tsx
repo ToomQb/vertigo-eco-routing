@@ -9,7 +9,7 @@ import {
 } from "react-leaflet";
 import L, { LatLngExpression, LatLngTuple } from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { Loader2 } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
 import InputField from "./inputField";
 import TransportOptions from "./transportOptions";
 import RouteInfo from "./routeInfos";
@@ -217,11 +217,22 @@ const MapComponent: React.FC = () => {
         className={`absolute top-16 left-8 bg-light dark:bg-gray-800 p-4 rounded-lg shadow-lg w-[350px] z-[1000] 
                       transition-opacity duration-[1200ms] ease-in-out
                       ${panelVisible ? "opacity-100" : "opacity-0"}`}>
-        <h2 className={`text-lg font-semibold mb-2 text-gray-800 dark:text-white 
-                        transition-transform duration-[1200ms] ease-in-out delay-[0ms]
-                        ${panelVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}>
-          Plan your route
-        </h2>
+        <div className="flex justify-between items-center mb-2">
+          <h2 className={`text-lg font-semibold text-gray-800 dark:text-white
+                          transition-transform duration-[1200ms] ease-in-out delay-[0ms]
+                          ${panelVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"}`}>
+            Plan your route
+          </h2>
+
+          <button
+            className="flex items-center gap-1 text-red-500 hover:text-red-700 transition-colors cursor-pointer"
+            onClick={() => alert("Like button clicked!")}
+            aria-label="Favorite"
+            type="button"
+          >
+            <Heart size={18} />
+          </button>
+        </div>
         
         <div className={`relative flex flex-col gap-1.5 z-[1000]
                         transition-transform duration-[1200ms] ease-in-out delay-[200ms]

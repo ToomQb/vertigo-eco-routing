@@ -5,23 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { FaSignInAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/components/global/authContext";
 
 const SignInPage = () => {
+  const { setIsLoggedIn, setUser } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    // Animation on mount
     const timer = setTimeout(() => setLoaded(true), 50);
-
-    // Disable scrolling
     document.body.style.overflow = "hidden";
-
     return () => {
       clearTimeout(timer);
-      // Restore scrolling when leaving page
       document.body.style.overflow = "";
     };
   }, []);
@@ -35,9 +34,7 @@ const SignInPage = () => {
         process.env.NEXT_PUBLIC_API_URL + "/auth/login",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: email, password: password }),
           credentials: "include",
         }
@@ -48,12 +45,16 @@ const SignInPage = () => {
         if (error.detail) alert(error.detail);
         console.error("Login failed:", error);
       } else {
-        //const data = await response.json();
-        alert("Login success!");
+        const userData = await response.json();
+
+        setUser({ name: userData.name, email: userData.email });
+        setIsLoggedIn(true);
+
+        router.push("/");
       }
     })();
-    // logique de connexion
   };
+
 
   return (
     <div className="bg-light dark:bg-dark-green min-h-screen flex justify-center items-center">

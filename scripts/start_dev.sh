@@ -23,8 +23,29 @@ cd ../
 if ! test -d data; then
     ./scripts/reset_db.sh
 fi;
+
+# Start postgres container
 docker-compose up -d postgres
 
+# Wait for Postgres to be ready
+echo "Waiting for PostgreSQL to be ready..."
+MAX_WAIT=30
+WAITED=0
+while ! nc -z localhost 5432; do
+  sleep 1
+  WAITED=$((WAITED+1))
+  if [ $WAITED -ge $MAX_WAIT ]; then
+    echo "PostgreSQL did not become ready in time"
+    exit 1
+  fi
+done
+echo "PostgreSQL is ready."
+
+
+# Run Alembic migrations
+cd back
+alembic upgrade head
+cd ../
 
 # run backend and frontend with same shell
 cmd1="cd back && uvicorn app.main:app --reload --port ${BACKEND_PORT} --host ${BACKEND_HOST}"

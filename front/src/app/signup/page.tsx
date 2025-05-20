@@ -5,12 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { FaUserPlus } from "react-icons/fa";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loaded, setLoaded] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     // Animate on mount
@@ -63,10 +65,9 @@ const SignUpPage = () => {
         const data = await response.json();
         console.log("User created:", data);
         alert("User created!");
+        router.push("/login");
       }
     })();
-
-    // logique d'inscription
   };
 
   return (

@@ -90,9 +90,9 @@ You can set `DEBUG` to `1` in it to enable debug mode in FastAPI and force sourc
 
 ## Quick start
 
-* `./scripts/start_dev` will install all dependencies and start the database, backend, and frontend (in development mode with HMR).
+* `sudo env "PATH=$PATH" ./scripts/start_dev.sh` will install all dependencies and start the database, backend, and frontend (in development mode with HMR).
 
-* `./scripts/start_prod` will install all dependencies, build the React application, and then start Nginx, the database, and the backend.
+* `sudo env "PATH=$PATH" ./scripts/start_prod.sh` will install all dependencies, build the React application, and then start Nginx, the database, and the backend.
 
 
 ## Details for Installation and Configuration
