@@ -1,4 +1,4 @@
-# EcoRoute - Computer Science Master's 2024-2025
+# VertiGo - Computer Science Master's 2024-2025
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
