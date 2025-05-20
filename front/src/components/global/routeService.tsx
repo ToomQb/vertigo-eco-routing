@@ -65,6 +65,10 @@ export const findRoute = async (
 
   const data = await response.json();
 
+  if (!data.features?.[0] || !data.features[0].properties?.summary) {
+    throw new Error("Route coordinates are missing or malformed.");
+  }
+
   const routeCoordinates = data.features[0]?.geometry?.coordinates;
   const summary = data.features[0].properties.summary;
 

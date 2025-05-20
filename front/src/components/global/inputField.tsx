@@ -68,8 +68,9 @@ const InputField: React.FC<Props> = ({ label, placeholder, value, setValue, onSe
 
   return (
     <div className="relative">
-      <label className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
+      <label htmlFor="address" className="text-sm text-gray-600 dark:text-gray-300">{label}</label>
       <input
+        id="address"
         ref={inputRef}
         className="w-full border px-3 py-2 rounded focus:outline-none mt-1"
         placeholder={placeholder}
@@ -79,7 +80,7 @@ const InputField: React.FC<Props> = ({ label, placeholder, value, setValue, onSe
         onBlur={handleBlur}
       />
       {showSuggestions && (
-        <ul className="absolute z-50 bg-light dark:bg-gray-700 shadow-md w-full mt-1 rounded max-h-40 overflow-auto">
+        <ul className="absolute z-1000 bg-light dark:bg-gray-700 shadow-md w-full mt-1 rounded max-h-40 overflow-auto">
           {suggestions.map((s, idx) => (
             <li
               key={idx}
