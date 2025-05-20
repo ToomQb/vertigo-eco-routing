@@ -81,7 +81,7 @@ export const findRoute = async (
   ]);
 
   const emissionResponse = await fetch(
-    `http://localhost:3002/routes/emission_co2/${selectedMode}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/routes/emission_co2/${selectedMode}`,
     {
       method: "GET",
       headers: { Accept: "application/json" },
