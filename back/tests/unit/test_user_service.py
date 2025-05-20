@@ -8,22 +8,22 @@ from app.config.security import SECRET_KEY, ALGORITHM
 
 @pytest.fixture
 def sample_user():
-    return UserInDB(username="unittestuser", email="test@example.com", hashed_password="hashed")
+    return UserInDB(email="test@example.com", hashed_password="hashed")
 
 @pytest.fixture
 def sample_user_register():
-    return UserRegister(username="unittestuser", email="test@example.com", password="password123")
+    return UserRegister(email="test@example.com", password="password123")
 
-def generate_token(username: str):
-    return encode({"sub": username}, SECRET_KEY, algorithm=ALGORITHM)
+def generate_token(email: str):
+    return encode({"sub": email}, SECRET_KEY, algorithm=ALGORITHM)
 
 # --- get_user ---
 
 @patch("app.services.user_service.UserCRUD")
 def test_get_user_found(mock_user_crud, sample_user):
     mock_user_crud.return_value.get_user.return_value = sample_user
-    user = UserService.get_user("unittestuser")
-    assert user.username == "unittestuser"
+    user = UserService.get_user("test@example.com")
+    assert user.email == "test@example.com"
 
 @patch("app.services.user_service.UserCRUD")
 def test_get_user_not_found(mock_user_crud):
@@ -37,10 +37,10 @@ def test_get_user_not_found(mock_user_crud):
 
 @patch("app.services.user_service.UserCRUD")
 def test_get_current_user_valid_token(mock_user_crud, sample_user):
-    token = generate_token("unittestuser")
+    token = generate_token("test@example.com")
     mock_user_crud.return_value.get_user.return_value = sample_user
     user = UserService.get_current_user(token)
-    assert user.username == "unittestuser"
+    assert user.email == "test@example.com"
 
 @patch("app.services.user_service.UserCRUD")
 def test_get_current_user_invalid_token(mock_user_crud):
@@ -65,13 +65,12 @@ def test_create_user_success(mock_user_crud, mock_security, sample_user_register
     mock_user_crud.return_value.get_user.return_value = None
     mock_security.hash_password.return_value = "hashed_pw"
     mock_user_crud.return_value.create_user.return_value = UserInDB(
-        username=sample_user_register.username,
         email=sample_user_register.email,
         hashed_password="hashed_pw"
     )
 
     user = UserService.create_user(sample_user_register)
-    assert user.username == sample_user_register.username
+    assert user.email == sample_user_register.email
     assert user.hashed_password == "hashed_pw"
 
 @patch("app.services.user_service.UserCRUD")

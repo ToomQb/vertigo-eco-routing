@@ -8,7 +8,7 @@ from app.config.security import ACCESS_TOKEN_EXPIRE_MINUTES
 
 @pytest.fixture
 def user_in_db():
-    return UserInDB(username="unittestuser", email="test@example.com", hashed_password="hashedpass")
+    return UserInDB(email="test@example.com", hashed_password="hashedpass")
 
 
 # --- authenticate_user ---
@@ -20,7 +20,7 @@ def test_authenticate_user_success(mock_security, mock_user_service, user_in_db)
     mock_security.verify_password.return_value = True
 
     result = AuthService.authenticate_user("unittestuser", "correctpassword")
-    assert result.username == user_in_db.username
+    assert result.email == user_in_db.email
 
 
 @patch("app.services.auth_service.UserService")
@@ -32,7 +32,7 @@ def test_authenticate_user_invalid_password(mock_security, mock_user_service, us
     with pytest.raises(HTTPException) as exc_info:
         AuthService.authenticate_user("unittestuser", "wrongpassword")
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
-    assert exc_info.value.detail == "Incorrect username or password"
+    assert exc_info.value.detail == "Incorrect email or password"
 
 
 @patch("app.services.auth_service.UserService")
@@ -42,7 +42,7 @@ def test_authenticate_user_user_not_found(mock_user_service):
     with pytest.raises(HTTPException) as exc_info:
         AuthService.authenticate_user("ghost", "password")
     assert exc_info.value.status_code == status.HTTP_401_UNAUTHORIZED
-    assert exc_info.value.detail == "Incorrect username or password"
+    assert exc_info.value.detail == "Incorrect email or password"
 
 
 # --- create_access_token ---

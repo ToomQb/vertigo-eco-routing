@@ -9,8 +9,8 @@ from app.services.security_service import SecurityService
 
 class UserService:
     @staticmethod
-    def get_user(username: str) -> UserInDB:
-        user = UserCRUD().get_user(username)
+    def get_user(email: str) -> UserInDB:
+        user = UserCRUD().get_user(email)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         return user
@@ -25,12 +25,12 @@ class UserService:
         )
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            username = payload.get("sub")
-            if username is None:
+            email = payload.get("sub")
+            if email is None:
                 raise credentials_exception
         except InvalidTokenError:
             raise credentials_exception
-        user = UserService.get_user(username)
+        user = UserService.get_user(email)
         if user is None:
             raise credentials_exception
         return user

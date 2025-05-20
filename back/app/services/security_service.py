@@ -6,7 +6,7 @@ from app.config.security import SECRET_KEY, ALGORITHM
 class SecurityService:
     @staticmethod
     def hash_password(password: str) -> str:
-        return  bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+        return  bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
