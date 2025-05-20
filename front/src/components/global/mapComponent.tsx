@@ -214,7 +214,7 @@ const MapComponent: React.FC = () => {
           Plan your route
         </h2>
         
-        <div className={`relative flex flex-col gap-1.5 
+        <div className={`relative flex flex-col gap-1.5 z-[1000]
                         transition-transform duration-[1200ms] ease-in-out delay-[200ms]
                         ${panelVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-6"}`}>
           {/* Starting point input */}

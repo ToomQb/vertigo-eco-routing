@@ -14,7 +14,7 @@ describe('HeaderOnlyLayout', () => {
 
     render(<HeaderOnlyLayout />);
 
-    expect(screen.getByText('EcoRoute')).toBeInTheDocument();
+    expect(screen.getByAltText('VertiGo Logo')).toBeInTheDocument();
 
     const aboutLink = screen.getByRole('link', { name: /about/i });
     expect(aboutLink).toBeInTheDocument();

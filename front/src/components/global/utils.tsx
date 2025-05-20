@@ -69,7 +69,7 @@ export async function searchAddress(query: string): Promise<AddressResult[]> {
     ].filter(Boolean); // Remove undefined/null parts
 
     return {
-      label: addressParts.join(", "),
+      label: addressParts.join(" "),
       lat: result.lat,
       lon: result.lon,
     };
