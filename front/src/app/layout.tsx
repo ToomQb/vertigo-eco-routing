@@ -10,7 +10,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "EcoRoute",
+  title: "VertiGo",
   description: "Create with React and Shadcn UI",
 };
 
