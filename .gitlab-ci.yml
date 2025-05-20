@@ -16,7 +16,7 @@ before_script:
 
 
 test-back:
-  stage:
+  stage: test-back
   script:
     - python3 -m venv venv
     - source venv/bin/activate
