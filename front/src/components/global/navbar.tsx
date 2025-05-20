@@ -154,7 +154,7 @@ const AvatarButton = ({ isLoggedIn, user, onLogout }: AvatarButtonProps) => {
               </DropdownMenuItem>
             </Link>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={onLogout}>
+            <DropdownMenuItem className="cursor-pointer text-red-600 hover:text-red-700" onClick={onLogout}>
               <FaSignOutAlt className="mr-2" size={18} /> Logout
             </DropdownMenuItem>
           </>
