@@ -1,8 +1,8 @@
-from fastapi import Depends, HTTPException, status 
+from fastapi import Depends, HTTPException, status, Request
 import jwt
 from jwt.exceptions import InvalidTokenError
 from typing import Annotated
-from app.config.security import oauth2_scheme, ALGORITHM, SECRET_KEY
+from app.config.security import ALGORITHM, SECRET_KEY
 from app.crud.user import UserCRUD
 from app.schemas.types import UserInDB, UserRegister
 from app.services.security_service import SecurityService
@@ -15,9 +15,13 @@ class UserService:
             raise HTTPException(status_code=404, detail="User not found")
         return user
         
-    
     @staticmethod
-    def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]) -> UserInDB:
+    def get_current_user_from_request(request: Request) -> UserInDB:
+        token = request.cookies.get("access_token")
+        return UserService.get_current_user(token)
+        
+    @staticmethod
+    def get_current_user(token: str) -> UserInDB:
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -25,7 +29,7 @@ class UserService:
         )
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            email = payload.get("sub")
+            email = payload.get("email")
             if email is None:
                 raise credentials_exception
         except InvalidTokenError:
