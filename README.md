@@ -1,4 +1,13 @@
-# VertiGo - Computer Science Master's 2024-2025
+# VertiGo 🌿 - Computer Science Master's 2024-2025
+
+**VertiGo** is an eco-aware route planning application that helps users compare itineraries between two points across multiple transport modes (car, public transport, bike, etc.), with a focus on **CO₂ emissions and travel time trade-offs**.
+
+For each route, the application computes and compares:
+-  estimated travel time
+-  CO₂ emissions per transport mode
+-  an eco-score to help users make informed, sustainable choices
+
+Built as a full-stack application with a Python/FastAPI backend, a React/Next.js frontend, and a PostgreSQL database.
 
 ## Table of Contents
 - [Technologies Used](#technologies-used)
