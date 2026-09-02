@@ -9,6 +9,8 @@ For each route, the application computes and compares:
 
 Built as a full-stack application with a Python/FastAPI backend, a React/Next.js frontend, and a PostgreSQL database.
 
+![Capture d'écran de l'application](assets/screen_app_vertigo.png)
+
 ## Table of Contents
 - [Technologies Used](#technologies-used)
 - [Project Structure](#project-structure)
